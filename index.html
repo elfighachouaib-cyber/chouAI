@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ChouAI — PDF Intelligence by Chouaib</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="window.katexReady=true;if(window.pendingMathRender){window.pendingMathRender();}"></script>
+<!-- Firebase loader with CDN fallback -->
+<script>
+(function(){
+  var V='10.12.0';
+  var files=['firebase-app-compat.js','firebase-auth-compat.js','firebase-database-compat.js'];
+  var cdns=[
+    'https://www.gstatic.com/firebasejs/'+V+'/',
+    'https://cdn.jsdelivr.net/npm/firebase@'+V+'/compat/',
+    'https://unpkg.com/firebase@'+V+'/compat/'
+  ];
+  var loaded=0;
+  function loadFile(cdnIdx,fileIdx){
+    if(cdnIdx>=cdns.length){
+      console.error('Failed to load Firebase SDK: '+files[fileIdx]);
+      return;
+    }
+    var s=document.createElement('script');
+    s.src=cdns[cdnIdx]+files[fileIdx];
+    s.async=false;
+    s.onload=function(){
+      loaded++;
+      if(loaded===files.length && window.initFirebase) window.initFirebase();
+    };
+    s.onerror=function(){ loadFile(cdnIdx+1,fileIdx); };
+    document.head.appendChild(s);
+  }
+  files.forEach(function(f,i){ loadFile(0,i); });
+})();
+</script>
+<style>
+:root{--bg:#0a0a0f;--bg3:#16161f;--card:#1a1a26;--border:rgba(255,255,255,0.07);--accent:#7c6aff;--accent2:#3ecfcf;--accent3:#ff6a88;--text:#e8e8f0;--muted:#7070a0;--white:#ffffff;--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--radius:16px;--radius-sm:10px;--glow:0 0 40px rgba(124,106,255,0.15);--shadow:0 8px 32px rgba(0,0,0,0.4)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;opacity:0.4}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:floatOrb 12s ease-in-out infinite}
+.orb1{width:500px;height:500px;background:rgba(124,106,255,0.08);top:-100px;right:-100px}
+.orb2{width:400px;height:400px;background:rgba(62,207,207,0.06);bottom:20%;left:-150px;animation-delay:-4s}
+.orb3{width:300px;height:300px;background:rgba(255,106,136,0.05);top:50%;right:10%;animation-delay:-8s}
+@keyframes floatOrb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes stepFade{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--white);cursor:pointer}
+.brand{color:var(--accent)}
+.menu-btn{background:var(--card);border:1px solid var(--border);color:var(--text);width:42px;height:42px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.2s}
+.menu-btn:hover{background:var(--accent);color:var(--white);border-color:var(--accent)}
+.lang-switcher{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px}
+.lang-btn{background:transparent;border:none;color:var(--muted);font-family:var(--font-display);font-weight:700;font-size:0.78rem;padding:5px 10px;border-radius:7px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.lang-btn:hover{color:var(--text)}
+.lang-btn.active{background:var(--accent);color:var(--white)}
+.dropdown{position:absolute;top:calc(100% + 8px);right:40px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;min-width:180px;box-shadow:var(--shadow);display:none;z-index:200}
+.dropdown.open{display:block;animation:slideDown 0.2s ease}
+.dropdown a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text);text-decoration:none;border-radius:8px;font-size:0.9rem;transition:all 0.15s;cursor:pointer}
+.dropdown a:hover{background:rgba(124,106,255,0.15);color:var(--accent)}
+.page{display:none;position:relative;z-index:1}
+.page.active{display:block}
+main{padding-top:76px}
+.hero{min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px 80px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.3);border-radius:99px;padding:6px 16px;font-size:0.8rem;color:var(--accent);font-family:var(--font-display);font-weight:600;margin-bottom:28px;animation:fadeUp 0.6s ease both}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;max-width:900px;margin-bottom:20px;animation:fadeUp 0.6s ease 0.1s both}
+.gradient{background:linear-gradient(135deg,var(--accent),var(--accent2) 50%,var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:560px;margin-bottom:40px;font-weight:300;animation:fadeUp 0.6s ease 0.2s both}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.6s ease 0.3s both}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;outline:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#5b4cf0);color:var(--white);box-shadow:0 4px 20px rgba(124,106,255,0.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,106,255,0.5)}
+.btn-premium{background:linear-gradient(135deg,#f7b731,#f0932b);color:#1a1a00;box-shadow:0 4px 20px rgba(247,183,49,0.35)}
+.btn-premium:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(247,183,49,0.5)}
+.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{background:var(--bg3);border-color:var(--accent);color:var(--accent)}
+.section-wrap{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-label{text-align:center;font-family:var(--font-display);font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.section-title{text-align:center;font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:12px}
+.section-sub{text-align:center;color:var(--muted);margin-bottom:56px;max-width:500px;margin-left:auto;margin-right:auto}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.demo-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;position:relative;overflow:hidden}
+.demo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.demo-card.right::before{background:linear-gradient(90deg,transparent,var(--accent2),transparent)}
+.demo-card-label{font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
+.dot2{background:var(--accent2)}
+.demo-text{font-size:0.88rem;color:var(--muted);line-height:1.7;font-style:italic}
+.demo-result{font-size:0.88rem;color:var(--text);line-height:1.7}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;transition:all 0.3s}
+.feature-card:hover{border-color:rgba(124,106,255,0.3);transform:translateY(-4px);box-shadow:var(--glow)}
+.feature-icon{font-size:2rem;margin-bottom:16px;display:block}
+.feature-card h3{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.feature-card p{color:var(--muted);font-size:0.9rem}
+.upload-section{padding:80px 24px;max-width:900px;margin:0 auto}
+.upload-area{background:var(--card);border:2px dashed rgba(124,106,255,0.3);border-radius:var(--radius);padding:56px 32px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:32px}
+.upload-area:hover,.upload-area.drag-over{border-color:var(--accent);background:rgba(124,106,255,0.05);box-shadow:0 0 30px rgba(124,106,255,0.1)}
+#fileInput{display:none}
+.upload-icon{font-size:3rem;margin-bottom:16px;display:block}
+.upload-area h3{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:0.9rem}
+.file-name{margin-top:16px;display:inline-flex;align-items:center;gap:8px;background:rgba(124,106,255,0.15);border:1px solid rgba(124,106,255,0.3);border-radius:8px;padding:6px 14px;font-size:0.85rem;color:var(--accent);font-family:var(--font-display);font-weight:600}
+.stats-bar{display:none;gap:20px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;margin-bottom:24px;flex-wrap:wrap}
+.stats-bar.show{display:flex}
+.stat-item{display:flex;align-items:center;gap:8px;font-size:0.85rem}
+.stat-label{color:var(--muted)}
+.stat-value{color:var(--accent2);font-family:var(--font-display);font-weight:700}
+.options-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.option-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.2s;color:var(--text)}
+.option-btn .opt-icon{font-size:1.8rem;display:block;margin-bottom:8px}
+.option-btn .opt-label{font-family:var(--font-display);font-weight:700;font-size:0.95rem;display:block;margin-bottom:4px}
+.option-btn .opt-desc{font-size:0.78rem;color:var(--muted)}
+.option-btn:hover{border-color:var(--accent);background:rgba(124,106,255,0.07)}
+.option-btn.selected{border-color:var(--accent);background:rgba(124,106,255,0.12);box-shadow:0 0 20px rgba(124,106,255,0.15)}
+.option-btn.selected .opt-label{color:var(--accent)}
+.opt-badge{display:inline-block;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:99px;margin-top:5px;letter-spacing:0.03em}
+.opt-badge-fast{background:rgba(62,207,207,0.15);color:var(--accent2);border:1px solid rgba(62,207,207,0.3)}
+.opt-badge-deep{background:rgba(124,106,255,0.15);color:var(--accent);border:1px solid rgba(124,106,255,0.3)}
+.wc-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px;padding:14px 18px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.trans-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);padding:8px 16px;color:var(--text);font-family:var(--font-display);font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s}
+.trans-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.trans-btn.selected{border-color:var(--accent2);background:rgba(62,207,207,0.1);color:var(--accent2)}
+.wc-label{font-family:var(--font-display);font-weight:700;font-size:0.88rem;color:var(--text);white-space:nowrap}
+.wc-select{background:var(--card);border:1.5px solid rgba(124,106,255,0.35);border-radius:8px;color:var(--text);font-family:var(--font-display);font-weight:600;font-size:0.85rem;padding:8px 14px;cursor:pointer;outline:none;transition:border-color 0.2s;flex:1;min-width:160px;max-width:280px}
+.wc-select:focus,.wc-select:hover{border-color:var(--accent)}
+.wc-note{font-size:0.76rem;color:var(--muted);font-style:italic}
+.action-btns{display:flex;gap:14px;margin-bottom:32px}
+.btn-process{flex:1;background:linear-gradient(135deg,var(--accent),#5b4cf0);color:var(--white);border:none;border-radius:var(--radius-sm);padding:16px;font-family:var(--font-display);font-weight:700;font-size:1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(124,106,255,0.3)}
+.btn-process:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,106,255,0.45)}
+.btn-process:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-clear{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:16px 24px;font-family:var(--font-display);font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s}
+.btn-clear:hover{border-color:#ff6a88;color:#ff6a88}
+.loading{display:none;flex-direction:column;align-items:center;gap:16px;padding:48px;text-align:center}
+.loading.show{display:flex}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+.step-anim{animation:stepFade 0.35s ease both}
+.loading-text{color:var(--muted);font-size:0.9rem}
+.loading-text span{color:var(--accent);font-family:var(--font-display);font-weight:700}
+.loading-sub{font-size:0.78rem;color:var(--muted);margin-top:4px;font-style:italic}
+.results{display:none}
+.results.show{display:block}
+.result-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;animation:fadeUp 0.4s ease both}
+.result-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02)}
+.result-title{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1rem}
+.result-actions{display:flex;gap:8px}
+.result-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--muted);font-size:0.8rem;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px}
+.result-btn:hover{background:rgba(124,106,255,0.1);color:var(--accent);border-color:rgba(124,106,255,0.3)}
+.result-body{padding:24px;max-height:500px;overflow-y:auto}
+.stream-live{white-space:pre-wrap;font-family:var(--font-body);font-size:0.95rem;line-height:1.8;color:var(--text)}
+.stream-cursor{display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:1px;vertical-align:text-bottom;animation:cursorBlink 0.8s infinite}
+.result-body .md-out{font-size:0.95rem;line-height:1.8;color:var(--text)}
+.result-body .md-out h3{font-family:var(--font-display);font-size:1.05rem;color:var(--accent);margin:16px 0 6px}
+.result-body .md-out h4{font-family:var(--font-display);font-size:0.98rem;color:var(--accent2);margin:12px 0 4px}
+.result-body .md-out p{margin-bottom:8px}
+.result-body .md-out strong{color:var(--accent);font-family:var(--font-display)}
+.wc-pill{display:inline-flex;align-items:center;font-size:0.75rem;color:var(--muted);background:var(--bg3);border-radius:99px;padding:3px 10px;margin-left:8px;font-family:var(--font-display);font-weight:600}
+.alert{display:none;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:var(--radius-sm);margin-bottom:24px;font-size:0.9rem}
+.alert.show{display:flex}
+.alert-error{background:rgba(255,106,136,0.1);border:1px solid rgba(255,106,136,0.3);color:#ff9ab0}
+.alert-success{background:rgba(62,207,207,0.1);border:1px solid rgba(62,207,207,0.3);color:var(--accent2)}
+.pdfjs-banner{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--radius-sm);margin-bottom:20px;font-size:0.85rem;font-family:var(--font-display);font-weight:600;background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.3);color:var(--accent)}
+.pdfjs-banner.hidden{display:none}
+.pdfjs-banner.err{background:rgba(255,106,136,0.1);border-color:rgba(255,106,136,0.3);color:#ff9ab0}
+.mini-spin{width:18px;height:18px;border:2px solid rgba(124,106,255,0.3);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.page-inner{max-width:900px;margin:0 auto;padding:80px 24px}
+.steps-grid{display:grid;gap:0;margin-bottom:56px}
+.step-item{display:grid;grid-template-columns:64px 1fr;gap:24px;padding-bottom:40px}
+.step-item:last-child{padding-bottom:0}
+.step-num-col{display:flex;flex-direction:column;align-items:center}
+.step-num{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),#5b4cf0);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--white);box-shadow:0 0 20px rgba(124,106,255,0.3)}
+.step-line{flex:1;width:2px;background:linear-gradient(to bottom,var(--accent),transparent);margin-top:8px}
+.step-item:last-child .step-line{display:none}
+.step-content{padding-top:8px}
+.step-content h3{font-family:var(--font-display);font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.step-content p{color:var(--muted);font-size:0.92rem}
+.tech-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-top:40px}
+.tech-block h3{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--accent)}
+.tech-block p{color:var(--muted);font-size:0.9rem;line-height:1.8}
+.faq-list{display:grid;gap:12px}
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;transition:border-color 0.2s}
+.faq-item.open{border-color:rgba(124,106,255,0.3)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:0.95rem;gap:16px;user-select:none;transition:color 0.2s}
+.faq-item.open .faq-q{color:var(--accent)}
+.faq-chevron{font-size:1.2rem;color:var(--muted);transition:transform 0.3s;flex-shrink:0}
+.faq-item.open .faq-chevron{transform:rotate(180deg);color:var(--accent)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s;padding:0 24px;color:var(--muted);font-size:0.9rem;line-height:1.8}
+.faq-a.open{max-height:300px;padding:0 24px 20px}
+.about-hero{background:linear-gradient(135deg,rgba(124,106,255,0.1),rgba(62,207,207,0.05));border:1px solid var(--border);border-radius:var(--radius);padding:56px 40px;text-align:center;margin-bottom:40px;position:relative;overflow:hidden}
+.about-hero::before{content:'ChouAI';position:absolute;font-family:var(--font-display);font-size:8rem;font-weight:800;color:rgba(124,106,255,0.04);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none}
+.about-hero h2{font-family:var(--font-display);font-size:2rem;font-weight:800;margin-bottom:16px}
+.about-hero p{color:var(--muted);max-width:600px;margin:0 auto}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px}
+.about-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:28px}
+.about-card h4{font-family:var(--font-display);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.about-card p{color:var(--muted);font-size:0.9rem;line-height:1.7}
+.contact-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center}
+.contact-block h3{font-family:var(--font-display);font-weight:700;margin-bottom:10px}
+.contact-block p{color:var(--muted);margin-bottom:16px;font-size:0.9rem}
+.contact-email{display:inline-flex;align-items:center;gap:8px;background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.3);border-radius:8px;padding:10px 20px;color:var(--accent);font-family:var(--font-display);font-weight:600;text-decoration:none;transition:all 0.2s}
+.contact-email:hover{background:rgba(124,106,255,0.2)}
+.ex-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.ex-title{font-family:var(--font-display);font-weight:800;font-size:1.15rem}
+.ex-badge{border-radius:99px;padding:3px 12px;font-size:0.75rem;font-family:var(--font-display);font-weight:700}
+.ex-badge-purple{background:rgba(124,106,255,0.15);border:1px solid rgba(124,106,255,0.3);color:var(--accent)}
+.ex-badge-teal{background:rgba(62,207,207,0.12);border:1px solid rgba(62,207,207,0.3);color:var(--accent2)}
+.ex-meta{display:flex;align-items:center;gap:8px;margin-top:14px}
+.ex-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);display:inline-block}
+.ex-meta-text{font-size:0.78rem;color:var(--muted);font-family:var(--font-display);font-weight:600}
+.math-block{font-family:monospace;font-size:0.83rem;line-height:1.9;color:var(--muted)}
+.math-block strong{color:var(--text);font-family:var(--font-display)}
+footer{border-top:1px solid var(--border);padding:32px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:60px;position:relative;z-index:1}
+.footer-left{font-family:var(--font-display);font-size:0.85rem;color:var(--muted)}
+.footer-left span{color:var(--accent)}
+.footer-right{font-size:0.8rem;color:var(--muted)}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:white;padding:10px 22px;border-radius:99px;font-family:var(--font-display);font-weight:600;font-size:0.85rem;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.pdf-export-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:var(--font-display);font-weight:700;font-size:0.85rem;padding:10px 22px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s;box-shadow:0 4px 15px rgba(124,106,255,0.3)}
+.pdf-export-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,106,255,0.4)}
+.pdf-export-bar{display:none;justify-content:center;margin-top:28px}
+.pdf-export-bar.show{display:flex}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+@media(max-width:768px){nav{padding:16px 20px}.dropdown{right:20px}.demo-grid,.features-grid,.about-grid{grid-template-columns:1fr}.options-grid{grid-template-columns:1fr 1fr}.action-btns{flex-direction:column}footer{flex-direction:column;gap:8px;text-align:center}.wc-row{flex-direction:column;align-items:flex-start}}
+@media(max-width:480px){.hero h1{font-size:2.4rem}.hero-btns{flex-direction:column;width:100%}.btn{justify-content:center}}
+@media print{
+  nav,footer,.upload-section,.hero,.section-wrap,.orb,.lang-switcher,
+  .pdf-export-bar,.action-btns,.result-actions,.stats-bar,.loading,
+  .options-grid,.wc-row,.pdfjs-banner,.alert,#page-howitworks,
+  #page-faq,#page-about,.page:not(.active){display:none!important}
+  body{background:#fff!important;color:#000!important;margin:0;padding:0}
+  main{padding-top:0!important}
+  #page-home,#resultsContainer,#summaryBlock,#explanationBlock,#translationBlock,#exerciseBlock{display:block!important}
+  .results{display:block!important}
+  #summaryBlock[style*="display: none"],#explanationBlock[style*="display: none"],
+  #translationBlock[style*="display: none"],#exerciseBlock[style*="display: none"]{display:none!important}
+  .result-block{background:#fff!important;color:#000!important;border:1px solid #ddd!important;border-radius:8px;box-shadow:none!important;page-break-inside:avoid;margin-bottom:24px;padding:16px}
+  .result-body *{color:#000!important;line-height:1.8}
+  .result-title{color:#111!important;font-size:1.1rem;font-weight:700;margin-bottom:8px;display:block}
+  .wc-pill{display:none}
+  .katex,.katex *{color:#000!important}
+  h1,h2,h3,strong{color:#000!important}
+  @page{margin:2cm;size:A4}
+}
+
+/* ── AUTH STYLES ─────────────────────────────────────── */
+.auth-btns{display:flex;gap:8px;align-items:center}
+.btn-login{background:transparent;border:1.5px solid var(--border);color:var(--text);font-family:var(--font-display);font-weight:700;font-size:0.8rem;padding:7px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.btn-login:hover{border-color:var(--accent);color:var(--accent)}
+.btn-signup{background:linear-gradient(135deg,var(--accent),#5b4cf0);color:#fff;font-family:var(--font-display);font-weight:700;font-size:0.8rem;padding:7px 16px;border-radius:8px;cursor:pointer;border:none;transition:all 0.2s}
+.btn-signup:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(124,106,255,0.4)}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:99px;padding:5px 12px 5px 6px;cursor:pointer;transition:all 0.2s}
+.user-pill:hover{border-color:var(--accent)}
+.user-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#5b4cf0);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:0.75rem;color:#fff;flex-shrink:0}
+.user-name{font-family:var(--font-display);font-weight:700;font-size:0.8rem;color:var(--text);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge-free{background:rgba(112,112,160,0.2);border:1px solid rgba(112,112,160,0.3);color:var(--muted);font-family:var(--font-display);font-weight:700;font-size:0.65rem;padding:2px 7px;border-radius:99px}
+.badge-premium{background:linear-gradient(135deg,rgba(255,193,7,0.2),rgba(255,152,0,0.2));border:1px solid rgba(255,193,7,0.4);color:#ffc107;font-family:var(--font-display);font-weight:700;font-size:0.65rem;padding:2px 7px;border-radius:99px}
+/* Auth Modal */
+.auth-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center}
+.auth-overlay.open{display:flex}
+.auth-overlay-bg{position:absolute;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.auth-modal{position:relative;z-index:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;max-width:420px;width:90%;box-shadow:0 24px 80px rgba(0,0,0,0.6);animation:fadeUp 0.3s ease}
+.auth-modal h2{font-family:var(--font-display);font-size:1.5rem;font-weight:800;margin-bottom:8px;text-align:center}
+.auth-modal p{color:var(--muted);font-size:0.9rem;text-align:center;margin-bottom:28px}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;color:#1f1f1f;border:none;border-radius:10px;padding:13px 20px;font-family:var(--font-display);font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.btn-google:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+.btn-google svg{flex-shrink:0}
+.auth-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all 0.15s}
+.auth-close:hover{background:rgba(255,255,255,0.05);color:var(--text)}
+.auth-features{display:grid;gap:8px;margin-bottom:24px}
+.auth-feat-row{display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--muted)}
+.auth-feat-row span:first-child{font-size:1rem}
+.auth-feat-row strong{color:var(--text)}
+/* Premium Modal */
+.premium-price{font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--accent);margin:16px 0 4px;text-align:center}
+.premium-price span{font-size:1rem;color:var(--muted);font-weight:400}
+.premium-features-list{text-align:left;display:grid;gap:8px;margin:20px 0 24px}
+.premium-feat{display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text)}
+.premium-feat::before{content:"✓";color:#4caf50;font-weight:800;flex-shrink:0}
+.pp-STVP7PQ5U9D6C{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}
+/* ── PREMIUM PAID NOTE — replaces the self-activate button ── */
+.premium-paid-note{margin-top:16px;padding:14px 18px;background:rgba(62,207,207,0.08);border:1px solid rgba(62,207,207,0.25);border-radius:10px;font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.6}
+.premium-paid-note strong{color:var(--accent2)}
+.logout-btn{background:transparent;border:1px solid rgba(255,106,136,0.3);color:#ff6a88;font-family:var(--font-display);font-weight:600;font-size:0.78rem;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all 0.2s;width:100%;margin-top:12px}
+.logout-btn:hover{background:rgba(255,106,136,0.1)}
+.user-dropdown{position:absolute;top:calc(100% + 8px);right:40px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;min-width:220px;box-shadow:var(--shadow);z-index:200;display:none}
+.user-dropdown.open{display:block;animation:slideDown 0.2s ease}
+.user-info-block{padding:8px 4px 12px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.user-info-block .u-name{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text)}
+.user-info-block .u-email{font-size:0.78rem;color:var(--muted);margin-top:2px}
+.user-info-block .u-badge{margin-top:6px}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="toast" id="toast"></div>
+
+<nav>
+  <div class="nav-logo" id="navLogo">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <defs><linearGradient id="brainGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/></linearGradient></defs>
+      <path d="M22 6C15.5 6 10 11.5 10 18c0 2.8 0.9 5.3 2.4 7.3C11.5 26.6 11 28.2 11 30c0 3.9 3.1 7 7 7h4h4c3.9 0 7-3.1 7-7c0-1.8-0.5-3.4-1.4-4.7C33.1 23.3 34 20.8 34 18C34 11.5 28.5 6 22 6z" fill="url(#brainGrad)" opacity="0.93"/>
+      <line x1="22" y1="9" x2="22" y2="37" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="2 3"/>
+      <path d="M14.5 18.5 Q13 21 14.5 23.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+      <path d="M16 14.5 Q14 17 16 19" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round" fill="none"/>
+      <path d="M29.5 18.5 Q31 21 29.5 23.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+      <path d="M28 14.5 Q30 17 28 19" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round" fill="none"/>
+      <path d="M25 9 L18 22 H23.5 L19 37 L31 20 H25 Z" fill="#ffc107" stroke="#e6a800" stroke-width="0.6" stroke-linejoin="round"/>
+    </svg>
+    <span><span class="brand">Chou</span>AI</span>
+  </div>
+  <div class="lang-switcher" id="langSwitcher">
+    <button class="lang-btn active" id="lang-en">🇬🇧 EN</button>
+    <button class="lang-btn" id="lang-fr">🇫🇷 FR</button>
+  </div>
+  <div id="authBtns" class="auth-btns">
+    <button class="btn-login" id="btnLogin">Log In</button>
+    <button class="btn-signup" id="btnSignup">Sign Up Free ✨</button>
+  </div>
+  <div id="userPill" class="user-pill" style="display:none">
+    <div class="user-avatar-placeholder" id="userAvatarEl">C</div>
+    <span class="user-name" id="userNameEl">User</span>
+    <span class="badge-free" id="userBadgeEl">FREE</span>
+  </div>
+  <button class="menu-btn" id="menuBtn">&#9776;</button>
+  <div class="user-dropdown" id="userDropdown">
+    <div class="user-info-block">
+      <div class="u-name" id="dropUserName">User</div>
+      <div class="u-email" id="dropUserEmail">email</div>
+      <div class="u-badge"><span class="badge-free" id="dropBadge">FREE</span></div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">↩ Sign Out</button>
+  </div>
+  <div class="dropdown" id="dropdown">
+    <a id="navHome">&#127968; Home</a>
+    <a id="navHow">&#9881; How It Works</a>
+    <a id="navFaq">&#10067; FAQ</a>
+    <a id="navAbout">&#128156; About Us</a>
+  </div>
+</nav>
+
+<main>
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-badge" id="heroBadgeEl">&#10024; AI-Powered Document Intelligence</div>
+    <h1 id="heroTitleEl">Your PDFs,<br><span class="gradient">Decoded by ChouAI</span></h1>
+    <p id="heroSubEl">Upload any PDF and let AI extract the intelligence. Summaries, deep explanations, translations — in seconds.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" id="heroStartBtn">&#10022; Start Using Free</button>
+      <button class="btn btn-premium" id="heroPremiumBtn">&#128081; Get Premium</button>
+      <button class="btn btn-secondary" id="heroHowBtn">Learn How It Works &rarr;</button>
+    </div>
+  </section>
+
+  <div class="section-wrap">
+    <div class="section-label" id="seeItLabelEl">See It In Action</div>
+    <div class="section-title" id="seeItTitleEl">From Dense Text to Clear Insight</div>
+    <p class="section-sub" id="seeItSubEl">ChouAI reads your document and distills it into what actually matters.</p>
+    <div style="margin-bottom:48px">
+      <div class="ex-header">
+        <span style="font-size:1.4rem">&#128196;</span>
+        <span class="ex-title" id="exSumTitleEl">Example: Article Summarization</span>
+        <span class="ex-badge ex-badge-purple">75–95 words</span>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-card-label"><span class="dot"></span> Original Article (~250 words)</div>
+          <p class="demo-text">The Amazon Rainforest, often called the "lungs of the Earth," spans over 5.5 million square kilometres across nine South American nations and is home to an estimated 10% of all species on the planet. Scientists have long understood its critical role in regulating global climate: the forest absorbs roughly 2 billion tonnes of CO₂ annually, while also generating massive rainfall through transpiration.<br><br>However, decades of deforestation driven by agriculture, cattle ranching, and logging have pushed the Amazon to a dangerous tipping point. Researchers warn that if roughly 20–25% of the Amazon is lost, the forest could transition into a dry savanna — a process known as "dieback."</p>
+        </div>
+        <div class="demo-card right">
+          <div class="demo-card-label" style="color:var(--accent2)"><span class="dot dot2"></span> ChouAI Summary — 75–95 words</div>
+          <p class="demo-result">The Amazon Rainforest spans 5.5 million km² and absorbs 2 billion tonnes of CO₂ annually while hosting 10% of Earth's species. Decades of deforestation are pushing it toward a critical tipping point: losing 20–25% of cover could trigger irreversible "dieback," converting the ecosystem into savanna and collapsing regional rainfall. While conservation efforts including satellite monitoring and indigenous protections are underway, scientists warn that political will remains insufficient — and the window for meaningful intervention is rapidly closing.</p>
+          <div class="ex-meta"><span class="ex-dot"></span><span class="ex-meta-text">84 words &middot; Precise &middot; On-topic</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="ex-header">
+        <span style="font-size:1.4rem">&#129518;</span>
+        <span class="ex-title" id="exExpTitleEl">Example: Math Concept Explanation</span>
+        <span class="ex-badge ex-badge-teal">Explain Mode</span>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-card-label"><span class="dot"></span> Complex Math Document</div>
+          <div class="math-block">
+            <strong>The Derivative — Formal Definition</strong><br><br>
+            f&prime;(x) = lim<sub>h&rarr;0</sub> [ f(x+h) &minus; f(x) ] / h<br><br>
+            For f(x) = x&sup2;: f&prime;(x) = <strong>2x</strong><br><br>
+            Chain Rule: for g(f(x)), derivative = g&prime;(f(x)) &middot; f&prime;(x).<br><br>
+            Integration: &int;x&sup2; dx = x&sup3;/3 + C
+          </div>
+        </div>
+        <div class="demo-card right">
+          <div class="demo-card-label" style="color:var(--accent2)"><span class="dot dot2"></span> ChouAI Explanation — Plain Language</div>
+          <p class="demo-result">A <strong style="color:var(--text)">derivative</strong> tells you how fast something is changing at any instant — like a speedometer for a curve. The formula shrinks the gap between two points to zero to find the exact rate of change.<br><br>The <strong style="color:var(--text)">Chain Rule</strong> handles nested functions. <strong style="color:var(--text)">Integration</strong> reverses the process — finding total area under a curve, like calculating distance from a speed graph.</p>
+          <div class="ex-meta"><span class="ex-dot"></span><span class="ex-meta-text">Plain language &middot; No jargon &middot; Step-by-step</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-wrap" style="padding-top:0">
+    <div id="translate-example-wrap" style="margin-bottom:48px">
+      <div class="ex-header">
+        <span style="font-size:1.4rem">&#127760;</span>
+        <span class="ex-title" id="ex-translate-title">Example: Document Translation</span>
+        <span class="ex-badge" style="background:rgba(255,106,136,0.15);color:var(--accent3);border:1px solid rgba(255,106,136,0.3)" id="ex-translate-badge">Translate Mode</span>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-card-label"><span class="dot"></span> <span id="ex-translate-orig-label">Original — English</span></div>
+          <p class="demo-text" id="ex-translate-orig">Regenerative braking is an electromechanical process that recovers kinetic energy during deceleration and converts it into electrical energy. In railway transport, the traction motor operates as a generator, producing an electromotive force proportional to its rotational speed. This energy can be stored in supercapacitors and reused during the next acceleration phase.</p>
+        </div>
+        <div class="demo-card right">
+          <div class="demo-card-label" style="color:var(--accent3)"><span class="dot" style="background:var(--accent3)"></span> <span id="ex-translate-result-label">ChouAI Translation — French</span></div>
+          <p class="demo-result" id="ex-translate-result">Le freinage régénératif est un procédé électromécanique qui récupère l'énergie cinétique lors de la décélération et la convertit en énergie électrique. Dans le transport ferroviaire, le moteur de traction fonctionne en génératrice, produisant une force électromotrice proportionnelle à sa vitesse de rotation. Cette énergie peut être stockée dans des supercondensateurs et réutilisée lors de la prochaine phase d'accélération.</p>
+          <div class="ex-meta"><span class="ex-dot" style="background:var(--accent3)"></span><span class="ex-meta-text" id="ex-translate-meta">EN → FR &middot; Fluent &middot; Structure preserved</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-wrap" style="padding-top:0">
+    <div class="features-grid">
+      <div class="feature-card"><span class="feature-icon">&#9889;</span><h3 id="feat1Title">Instant Processing</h3><p id="feat1Desc">Get results fast using Mistral Large — a frontier reasoning model by Mistral AI, natively French, specialized for math &amp; science.</p></div>
+      <div class="feature-card"><span class="feature-icon">&#128274;</span><h3 id="feat2Title">Private by Design</h3><p id="feat2Desc">Your files never touch our servers. Everything runs in your browser. Zero storage, zero tracking.</p></div>
+      <div class="feature-card"><span class="feature-icon">&#129302;</span><h3 id="feat3Title">100% Free</h3><p id="feat3Desc">Powered by Mistral's free inference API. Just upload your PDF and click process — no setup, no credit card needed.</p></div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <section class="upload-section" id="upload-section">
+    <div class="section-label" id="uploadLabelEl">Start Here</div>
+    <div class="section-title" id="uploadTitleEl">Process Your PDF</div>
+    <p class="section-sub" id="uploadSubEl" style="margin-bottom:40px;">Drag and drop or click to upload — completely free, forever.</p>
+
+    <div class="pdfjs-banner" id="pdfjsBanner">
+      <div class="mini-spin"></div>
+      <span id="pdfjsBannerText">Loading PDF engine…</span>
+    </div>
+
+    <div class="alert alert-error" id="errorAlert"><span>&#9888;</span><span id="errorMsg"></span></div>
+    <div class="alert alert-success" id="successAlert"><span>&#9989;</span><span id="successMsg"></span></div>
+
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept=".pdf"/>
+      <span class="upload-icon">&#128196;</span>
+      <h3 id="dropTitleEl">Drop your PDF here</h3>
+      <p id="dropSubEl">or click to browse your files</p>
+      <span class="file-name" id="fileName" style="display:none">&#128206; <span id="fileNameText"></span></span>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-item"><span class="stat-label" id="statPagesLbl">Pages:</span><span class="stat-value" id="pageCount">-</span></div>
+      <div class="stat-item"><span class="stat-label" id="statWordsLbl">Words:</span><span class="stat-value" id="wordCount">-</span></div>
+      <div class="stat-item"><span class="stat-label" id="statCharsLbl">Chars sent:</span><span class="stat-value" id="charCount">-</span></div>
+    </div>
+
+    <!-- FIX #2: opt-both now has the 👑 premium badge, consistent with other premium options -->
+    <div class="options-grid">
+      <div class="option-btn selected" id="opt-summarize"><span class="opt-icon">&#10024;</span><span class="opt-label" id="optSumLbl">Summarize</span><span class="opt-desc" id="optSumDesc">Concise overview</span></div>
+      <div class="option-btn" id="opt-explain-fast"><span class="opt-icon">&#9889;</span><span class="opt-label" id="optExpFastLbl">Quick Explain</span><span class="opt-desc" id="optExpFastDesc">Fast, key ideas</span><span class="opt-badge opt-badge-fast" id="optExpFastBadge">Faster · Less detail</span></div>
+      <div class="option-btn" id="opt-explain"><span class="opt-icon">&#127891;</span><span class="opt-label" id="optExpLbl">Deep Explain</span><span class="opt-desc" id="optExpDesc">Full structured dive</span><span class="opt-badge opt-badge-deep" id="optExpDeepBadge">Detailed · Takes longer</span><span class="opt-badge" id="premBadgeExp" style="background:rgba(255,193,7,0.15);color:#ffc107;border:1px solid rgba(255,193,7,0.3);display:none">👑 Premium</span></div>
+      <div class="option-btn" id="opt-both"><span class="opt-icon">&#128218;</span><span class="opt-label" id="optBothLbl">Both</span><span class="opt-desc" id="optBothDesc">Summary + explain</span><span class="opt-badge" id="premBadgeBoth" style="background:rgba(255,193,7,0.15);color:#ffc107;border:1px solid rgba(255,193,7,0.3);display:none">👑 Premium</span></div>
+      <div class="option-btn" id="opt-translate"><span class="opt-icon">&#127760;</span><span class="opt-label" id="optTransLbl">Translate</span><span class="opt-desc" id="optTransDesc">EN ↔ FR</span><span class="opt-badge" id="premBadgeTrans" style="background:rgba(255,193,7,0.15);color:#ffc107;border:1px solid rgba(255,193,7,0.3);display:none">👑 Premium</span></div>
+      <div class="option-btn" id="opt-exercise"><span class="opt-icon">&#129504;</span><span class="opt-label" id="optExLbl">Solve Exercises</span><span class="opt-desc" id="optExDesc">Find &amp; solve problems</span><span class="opt-badge opt-badge-deep" id="optExBadge">Hint or Full Solution</span><span class="opt-badge" id="premBadgeEx" style="background:rgba(255,193,7,0.15);color:#ffc107;border:1px solid rgba(255,193,7,0.3);display:none">👑 Premium</span></div>
+    </div>
+
+    <div class="wc-row" id="bothExplainRow" style="display:none">
+      <span class="wc-label" id="bothExplainLabel">📚 Explanation depth:</span>
+      <div style="display:flex;gap:8px">
+        <div class="trans-btn" id="both-fast">⚡ Quick</div>
+        <div class="trans-btn selected" id="both-deep">🎓 Deep</div>
+      </div>
+    </div>
+
+    <div class="wc-row" id="wordCountRow">
+      <span class="wc-label" id="wcLabelEl">&#128221; Summary Length:</span>
+      <select class="wc-select" id="wordCountSelect">
+        <option value="40-70">40–70 words (short)</option>
+        <option value="75-95" selected>75–95 words (medium)</option>
+        <option value="100-120">100–120 words (long)</option>
+        <option value="120-150">120–150 words (very long)</option>
+        <option value="150+">150+ words (full)</option>
+      </select>
+      <span class="wc-note" id="wcNoteEl">Applied to Summarize mode only</span>
+    </div>
+
+    <div class="wc-row" id="translateRow" style="display:none">
+      <span class="wc-label" id="transLabelEl">&#127760; Translate:</span>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="trans-btn selected" id="trans-enfr">🇬🇧 English → 🇫🇷 French</button>
+        <button class="trans-btn" id="trans-fren">🇫🇷 French → 🇬🇧 English</button>
+      </div>
+    </div>
+
+    <div class="wc-row" id="exerciseModeRow" style="display:none">
+      <span class="wc-label" id="exerciseModeLabel">🧩 Solution mode:</span>
+      <div style="display:flex;gap:8px">
+        <div class="trans-btn" id="ex-hint">💡 Hint only</div>
+        <div class="trans-btn selected" id="ex-solve">✏️ Full solution</div>
+      </div>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-process" id="processBtn" disabled>&#10022; Process PDF</button>
+      <button class="btn-clear" id="clearBtn">&#8635; Clear</button>
+    </div>
+
+    <div class="loading" id="loadingSpinner">
+      <div class="spinner"></div>
+      <div class="loading-text"><span>ChouAI</span> — <span id="loadingStep">Starting…</span></div>
+      <div class="loading-sub" id="loadingSub">Connecting to AI…</div>
+    </div>
+
+    <div class="results" id="resultsContainer">
+      <div class="result-block" id="summaryBlock" style="display:none">
+        <div class="result-header">
+          <div class="result-title">&#10024; <span id="resSumTitleTxt">Summary</span> <span class="wc-pill" id="summaryWC"></span></div>
+          <div class="result-actions">
+            <button class="result-btn" id="copySummaryBtn">&#128203; Copy</button>
+            <button class="result-btn" id="dlSummaryBtn">&#11015; Download .txt</button>
+          </div>
+        </div>
+        <div class="result-body" id="summaryBody"></div>
+      </div>
+
+      <div class="result-block" id="explanationBlock" style="display:none">
+        <div class="result-header">
+          <div class="result-title">&#127891; <span id="resExpTitleTxt">Explanation</span> <span class="wc-pill" id="explanationWC"></span></div>
+          <div class="result-actions">
+            <button class="result-btn" id="copyExplainBtn">&#128203; Copy</button>
+            <button class="result-btn" id="dlExplainBtn">&#11015; Download .txt</button>
+          </div>
+        </div>
+        <div class="result-body" id="explanationBody"></div>
+      </div>
+
+      <div class="result-block" id="translationBlock" style="display:none">
+        <div class="result-header">
+          <div class="result-title">&#127760; <span id="resTransTitleTxt">Translation</span> <span class="wc-pill" id="translationWC"></span></div>
+          <div class="result-actions">
+            <button class="result-btn" id="copyTransBtn">&#128203; Copy</button>
+            <button class="result-btn" id="dlTransBtn">&#11015; Download .txt</button>
+          </div>
+        </div>
+        <div class="result-body" id="translationBody"></div>
+      </div>
+
+      <div class="result-block" id="exerciseBlock" style="display:none">
+        <div class="result-header">
+          <div class="result-title">&#129504; <span id="resExTitleTxt">Exercise Solver</span> <span class="wc-pill" id="exerciseWC"></span></div>
+          <div class="result-actions">
+            <button class="result-btn" id="copyExerciseBtn">&#128203; Copy</button>
+            <button class="result-btn" id="dlExerciseBtn">&#11015; Download .txt</button>
+          </div>
+        </div>
+        <div class="result-body" id="exerciseBody"></div>
+      </div>
+    </div>
+
+    <div class="pdf-export-bar" id="pdfExportBar">
+      <button class="pdf-export-btn" id="pdfExportBtn">&#128196; Export as PDF</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-left">&copy; 2025 <span>ChouAI</span> &mdash; Built by Chouaib</div>
+    <div class="footer-right" id="footerRightEl">Free &middot; Private &middot; Mistral AI</div>
+  </footer>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="page" id="page-howitworks">
+  <div class="page-inner">
+    <div class="section-label" id="howLabelEl">The Process</div>
+    <div class="section-title" id="howTitleEl">How ChouAI Works</div>
+    <p class="section-sub" id="howSubEl" style="margin-bottom:56px;">Three simple steps from document to insight.</p>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num-col"><div class="step-num">1</div><div class="step-line"></div></div>
+        <div class="step-content"><h3 id="step1Title">Upload Your PDF</h3><p id="step1Desc">Drag and drop or click to select any PDF. ChouAI uses PDF.js to read the file entirely in your browser — nothing is ever uploaded to a server. Your document stays 100% private.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num-col"><div class="step-num">2</div><div class="step-line"></div></div>
+        <div class="step-content"><h3 id="step2Title">Choose Your Output</h3><p id="step2Desc">Select Summarize, Quick/Deep Explain, Translate, Solve Exercises, or Both. For summaries, choose your preferred word count range.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num-col"><div class="step-num">3</div><div class="step-line"></div></div>
+        <div class="step-content"><h3 id="step3Title">Get Your Results</h3><p id="step3Desc">Your text is sent securely to Mistral Large via the Mistral API. Results stream word-by-word in real time with full LaTeX math rendering. Copy or download instantly.</p></div>
+      </div>
+    </div>
+    <div class="tech-block">
+      <h3>&#9881; Under the Hood</h3>
+      <p>ChouAI uses <strong style="color:var(--text)">PDF.js</strong> for in-browser PDF extraction. AI is powered by <strong style="color:var(--text)">mistral-large-latest</strong> via the <strong style="color:var(--text)">Mistral API</strong>. Math is rendered live using <strong style="color:var(--text)">KaTeX</strong>. No backend, no database — a single HTML file, free and private by default.</p>
+    </div>
+    <div style="text-align:center;margin-top:48px">
+      <button class="btn btn-primary" id="tryItNowBtn">&#10022; Try It Now</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-left">&copy; 2025 <span>ChouAI</span> &mdash; Built by Chouaib</div>
+    <div class="footer-right">Free &middot; Private &middot; Mistral AI</div>
+  </footer>
+</div>
+
+<!-- FAQ -->
+<div class="page" id="page-faq">
+  <div class="page-inner">
+    <div class="section-label">Answers</div>
+    <div class="section-title">Frequently Asked Questions</div>
+    <p class="section-sub" id="faqSubEl" style="margin-bottom:48px;">Everything you need to know about ChouAI.</p>
+    <div class="faq-list" id="faqList"></div>
+    <div style="text-align:center;margin-top:48px">
+      <button class="btn btn-primary" id="startFromFaqBtn">&#10022; Start Using ChouAI</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-left">&copy; 2025 <span>ChouAI</span> &mdash; Built by Chouaib</div>
+    <div class="footer-right">Free &middot; Private &middot; Mistral AI</div>
+  </footer>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="page-inner">
+    <div class="about-hero">
+      <h2 id="aboutHeroTitle">Built with &#10084; by Chouaib</h2>
+      <p id="aboutHeroSub">ChouAI was created with a single belief: powerful AI tools should be accessible to everyone — no setup, no credit card, no limits.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card"><h4 id="aboutCard1Title">&#127919; Our Mission</h4><p id="aboutCard1Desc">To make AI-powered document understanding effortlessly accessible. Whether you are a student, researcher, or professional — ChouAI puts state-of-the-art AI in your hands, free of charge, every time.</p></div>
+      <div class="about-card"><h4 id="aboutCard2Title">&#128274; Privacy First</h4><p id="aboutCard2Desc">Your documents are your business. ChouAI processes everything in your browser using PDF.js. No file ever leaves your device — only the extracted text is sent to the AI API and it is never stored.</p></div>
+      <div class="about-card"><h4 id="aboutCard3Title">&#9889; Why Free?</h4><p id="aboutCard3Desc">ChouAI uses Mistral's free inference API and is hosted on GitHub Pages at zero cost. The vision is a world where intelligence tools do not have a paywall.</p></div>
+      <div class="about-card"><h4 id="aboutCard4Title">&#128640; What's Next?</h4><p id="aboutCard4Desc">Chat with your document, custom prompts, and bulk processing are all on the roadmap. ChouAI is constantly evolving.</p></div>
+    </div>
+    <div class="contact-block">
+      <h3 id="contactTitle">&#128236; Get In Touch</h3>
+      <p id="contactDesc">Have feedback, ideas, or questions? We'd love to hear from you.</p>
+      <a class="contact-email" id="contactEmailLink" href="#">&#9993; <span id="contactEmailText">elfighachouaib [at] gmail.com</span></a>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-left">&copy; 2025 <span>ChouAI</span> &mdash; Built by Chouaib</div>
+    <div class="footer-right">Free &middot; Private &middot; Mistral AI</div>
+  </footer>
+</div>
+
+</main>
+
+<!-- Auth Modal -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-overlay-bg" id="authOverlayBg"></div>
+  <div class="auth-modal">
+    <button class="auth-close" id="authClose">&times;</button>
+    <div style="text-align:center;margin-bottom:16px;font-size:2rem">⚡</div>
+    <h2><span class="brand">Chou</span>AI</h2>
+    <p id="authModalSub">Sign in to access all features</p>
+    <div class="auth-features">
+      <div class="auth-feat-row"><span>✨</span><span><strong>Free:</strong> Summarize &amp; Quick Explain — unlimited</span></div>
+      <div class="auth-feat-row"><span>🎓</span><span><strong>Premium ($5/mo):</strong> Deep Explain, Both, Translate &amp; Exercise Solver</span></div>
+      <div class="auth-feat-row"><span>🔒</span><span><strong>Private:</strong> Your PDFs never leave your device</span></div>
+    </div>
+    <!-- Google Identity Services button — no iframes, no tracking prevention issues -->
+    <!-- Sign in button -->
+    <button class="btn-google" id="btnGoogleSignIn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continuer avec Google
+    </button>
+    <div id="authTrackingNote" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(255,106,136,0.08);border:1px solid rgba(255,106,136,0.3);border-radius:10px;font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.6">
+      ⚠️ <strong style="color:#ff6a88">Sign-in is being blocked.</strong><br>
+      Try opening this site in Chrome or Firefox, or disable tracking prevention in Edge for this site.
+    </div>
+    <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:16px">By signing in you agree to our terms. No credit card needed for free features.</p>
+  </div>
+</div>
+
+<!-- Premium Modal -->
+<div class="auth-overlay" id="premiumOverlay">
+  <div class="auth-overlay-bg" id="premiumOverlayBg"></div>
+  <div class="auth-modal">
+    <button class="auth-close" id="premiumClose">&times;</button>
+    <div style="text-align:center;margin-bottom:8px;font-size:2rem">👑</div>
+    <h2>Upgrade to Premium</h2>
+    <div class="premium-price">$5<span>/month</span></div>
+    <div class="premium-features-list">
+      <div class="premium-feat">Deep Explanation — full structured breakdown</div>
+      <div class="premium-feat">Both Mode — Summary + Deep Explain together</div>
+      <div class="premium-feat">Translation — English ↔ French</div>
+      <div class="premium-feat">Exercise Solver — step-by-step solutions</div>
+      <div class="premium-feat">Unlimited PDFs — no daily cap</div>
+      <div class="premium-feat">Priority processing — faster results</div>
+    </div>
+    <div style="display:flex;justify-content:center;margin-bottom:12px">
+      <div>
+        <form action="https://www.paypal.com/ncp/payment/STVP7PQ5U9D6C" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+          <input class="pp-STVP7PQ5U9D6C" type="submit" value="Upgrade with PayPal — $5/mo" />
+          <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="cards" />
+          <section style="font-size:0.75rem;color:var(--muted)">Secured by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:0.875rem;vertical-align:middle;"/></section>
+        </form>
+      </div>
+    </div>
+    <div class="premium-paid-note">
+      ✅ Already paid? <strong>Premium is activated manually by Chouaib</strong> within 24h of payment.<br>
+      Make sure you're signed in with the same Google account used during checkout.<br>
+      Questions? Contact: <strong>elfighachouaib@gmail.com</strong>
+    </div>
+  </div>
+</div>
+
+<!-- PayPal SDK -->
+<script defer src="https://www.paypal.com/sdk/js?client-id=BAAv2kiKERaRLfCh-zWI5VlHm32l9zC6KN77BNm6BTsYyVExEDjw8KuAoLge7dj1kIqp-6gHR3mM7kMIqs&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// FIREBASE + AUTH SYSTEM
+// ══════════════════════════════════════════════════════════════════
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBSQwtGe2VTyQYzW-Uo1hTdqK_a1CbI5pk",
+  authDomain: "chouai.firebaseapp.com",
+  databaseURL: "https://chouai-default-rtdb.firebaseio.com",
+  projectId: "chouai",
+  storageBucket: "chouai.firebasestorage.app",
+  messagingSenderId: "864889567367",
+  appId: "1:864889567367:web:0acc0ad7248dbb25892022"
+};
+
+var currentUser = null;
+var isPremium = false;
+var firebaseLoaded = false;
+var firebaseApp, auth, db;
+
+window.initFirebase = function(){
+  if(typeof firebase === 'undefined'){ console.error('Firebase SDK not available'); return; }
+  try{
+    firebaseApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.database();
+    firebaseLoaded = true;
+    auth.onAuthStateChanged(function(user){
+      if(user){
+        currentUser = user;
+        db.ref('users/'+user.uid).once('value').then(function(snap){
+          var data = snap.val() || {};
+          isPremium = data.isPremium === true;
+          if(!data.email){
+            db.ref('users/'+user.uid).set({
+              name: user.displayName||'',
+              email: user.email||'',
+              isPremium: false,
+              createdAt: Date.now()
+            });
+          }
+          updateAuthUI(user, isPremium);
+        });
+      } else {
+        currentUser = null;
+        isPremium = false;
+        updateAuthUI(null, false);
+      }
+    });
+  } catch(e){ console.warn('Firebase init failed:', e.message); }
+};
+
+function updateAuthUI(user, premium){
+  var authBtns   = document.getElementById('authBtns');
+  var userPill   = document.getElementById('userPill');
+  var userNameEl = document.getElementById('userNameEl');
+  var userBadge  = document.getElementById('userBadgeEl');
+  var dropName   = document.getElementById('dropUserName');
+  var dropEmail  = document.getElementById('dropUserEmail');
+  var dropBadge  = document.getElementById('dropBadge');
+  var avatarEl   = document.getElementById('userAvatarEl');
+  // FIX #2: premBadgeBoth added to premium badge list
+  var premBadgeIds = ['premBadgeExp','premBadgeTrans','premBadgeEx','premBadgeBoth'];
+
+  if(user){
+    authBtns.style.display = 'none';
+    userPill.style.display = 'flex';
+    var firstName = (user.displayName||'User').split(' ')[0];
+    userNameEl.textContent = firstName;
+    dropName.textContent   = user.displayName || 'User';
+    dropEmail.textContent  = user.email || '';
+    avatarEl.textContent   = firstName[0].toUpperCase();
+
+    if(premium){
+      userBadge.textContent = '👑 PREMIUM';
+      userBadge.className   = 'badge-premium';
+      dropBadge.textContent = '👑 PREMIUM';
+      dropBadge.className   = 'badge-premium';
+      premBadgeIds.forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+      });
+      // Premium users: hide Get Premium button
+      var premBtn = document.getElementById('heroPremiumBtn');
+      if(premBtn) premBtn.style.display = 'none';
+    } else {
+      userBadge.textContent = 'FREE';
+      userBadge.className   = 'badge-free';
+      dropBadge.textContent = 'FREE';
+      dropBadge.className   = 'badge-free';
+      premBadgeIds.forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.style.display = 'inline-block';
+      });
+      // Free users: show Get Premium button
+      var premBtn = document.getElementById('heroPremiumBtn');
+      if(premBtn) premBtn.style.display = '';
+    }
+  } else {
+    authBtns.style.display = 'flex';
+    userPill.style.display = 'none';
+    premBadgeIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'inline-block';
+    });
+    // Logged out: show Get Premium button
+    var premBtn = document.getElementById('heroPremiumBtn');
+    if(premBtn) premBtn.style.display = '';
+  }
+}
+
+
+function signInWithGoogle(){
+  if(!firebaseLoaded){ alert('Service indisponible. Rechargez la page.'); return; }
+  var provider = new firebase.auth.GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+  auth.signInWithPopup(provider).then(function(result){
+    closeAuthModal();
+    toast('Bienvenue sur ChouAI ! 🎉');
+  }).catch(function(err){
+    console.error(err);
+    if(err.code === 'auth/popup-closed-by-user') return;
+    if(err.code === 'auth/popup-blocked'){
+      toast('Popup bloqué — autorisez les popups pour ce site.');
+      return;
+    }
+    toast('Erreur de connexion: ' + err.message);
+  });
+}
+
+function signOut(){
+  if(!firebaseLoaded) return;
+  auth.signOut().then(function(){
+    toast('Signed out successfully.');
+    closeUserDropdown();
+  });
+}
+
+function openAuthModal(){ document.getElementById('authOverlay').classList.add('open'); }
+function closeAuthModal(){ document.getElementById('authOverlay').classList.remove('open'); }
+function openPremiumModal(){ document.getElementById('premiumOverlay').classList.add('open'); }
+function closePremiumModal(){ document.getElementById('premiumOverlay').classList.remove('open'); }
+function toggleUserDropdown(){ document.getElementById('userDropdown').classList.toggle('open'); }
+function closeUserDropdown(){ document.getElementById('userDropdown').classList.remove('open'); }
+
+// FIX #1: checkPremiumAccess now includes 'both' as premium
+function checkPremiumAccess(mode){
+  if(mode === 'summarize' || mode === 'explain-fast') return true;
+  if(!currentUser){ openAuthModal(); return false; }
+  if(!isPremium){ openPremiumModal(); return false; }
+  return true;
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+
+var MISTRAL_TOKEN = 'qmRQZRC3UgBMWIYz3bETbMMMwwMgd1bq';
+var CHAT_URL   = 'https://api.mistral.ai/v1/chat/completions';
+var CHAT_MODEL = 'mistral-large-latest';
+
+var PDFJS_SRCS = [
+  {lib:'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js',worker:'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js'},
+  {lib:'https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js',worker:'https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js'},
+  {lib:'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js',worker:'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js'}
+];
+
+var MAX_CHARS      = 28000;
+var selOption      = 'summarize';
+var selBothExplain = 'deep';
+var selTransDir    = 'enfr';
+var selWordCount   = '75-95';
+var selExMode      = 'solve';
+var extractedText  = '';
+var pdfjsOK        = false;
+var uiLang         = 'en';
+// FIX #7: abort controller for in-flight fetch
+var activeAbortControllers = [];
+
+function loadScript(src){
+  return new Promise(function(res,rej){
+    var el=document.createElement('script');el.src=src;
+    el.onload=res;el.onerror=rej;document.head.appendChild(el);
+  });
+}
+function tryPdfjsCDN(i){
+  if(i>=PDFJS_SRCS.length){
+    var b=document.getElementById('pdfjsBanner');
+    b.className='pdfjs-banner err';
+    b.innerHTML='&#9888; PDF engine failed. Try disabling your ad-blocker or use Chrome/Firefox.';
+    return;
+  }
+  loadScript(PDFJS_SRCS[i].lib).then(function(){
+    if(typeof window.pdfjsLib==='undefined'){tryPdfjsCDN(i+1);return;}
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_SRCS[i].worker;
+    pdfjsOK=true;
+    document.getElementById('pdfjsBanner').className='pdfjs-banner hidden';
+  }).catch(function(){tryPdfjsCDN(i+1);});
+}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
+  var t=document.getElementById('page-'+p);if(t)t.classList.add('active');
+  closeMenu();window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleMenu(){document.getElementById('dropdown').classList.toggle('open');}
+function closeMenu(){document.getElementById('dropdown').classList.remove('open');}
+function goUpload(){
+  showPage('home');
+  setTimeout(function(){
+    var el=document.getElementById('upload-section');
+    if(el)el.scrollIntoView({behavior:'smooth'});
+  },160);
+}
+
+function onFileChosen(file){
+  if(!file)return;
+  if(!pdfjsOK){showError('PDF engine is still loading — please wait a moment.');return;}
+  hideAlerts();clearResults();
+  document.getElementById('fileName').style.display='none';
+  document.getElementById('statsBar').classList.remove('show');
+  document.getElementById('processBtn').disabled=true;
+  extractedText='';
+
+  file.arrayBuffer().then(function(buf){
+    return window.pdfjsLib.getDocument({data:buf}).promise;
+  }).then(function(pdf){
+    var jobs=[];
+    for(var p=1;p<=pdf.numPages;p++)jobs.push(pdf.getPage(p));
+    return Promise.all(jobs).then(function(pages){
+      return Promise.all(pages.map(function(pg){
+        return pg.getTextContent().then(function(c){
+          var out='';var items=c.items.filter(function(it){return it.str!=null;});
+          for(var i=0;i<items.length;i++){
+            var it=items[i];
+            if(!it.str&&!it.hasEOL)continue;
+            if(it.hasEOL){out+='\n';continue;}
+            if(i>0){
+              var prev=items[i-1];
+              var sameY=Math.abs(it.transform[5]-prev.transform[5])<2;
+              if(!sameY){out+='\n';}
+              else{
+                var gap=it.transform[4]-(prev.transform[4]+(prev.width||0));
+                if(gap>1&&prev.str&&prev.str.slice(-1)!==' '&&it.str[0]!==' ')out+=' ';
+              }
+            }
+            out+=it.str;
+          }
+          return out;
+        });
+      }));
+    }).then(function(chunks){return{pages:pdf.numPages,text:chunks.join('\n').trim()};});
+  }).then(function(r){
+    if(!r.text||r.text.length<30){showError('Could not extract text. This PDF may be scanned or image-based.');return;}
+    extractedText=cleanText(r.text);
+    var wc=r.text.split(/\s+/).filter(Boolean).length;
+    document.getElementById('fileNameText').textContent=file.name;
+    document.getElementById('fileName').style.display='inline-flex';
+    document.getElementById('pageCount').textContent=r.pages;
+    document.getElementById('wordCount').textContent=wc.toLocaleString();
+    document.getElementById('charCount').textContent=Math.min(r.text.length,MAX_CHARS).toLocaleString()+' / '+r.text.length.toLocaleString();
+    document.getElementById('statsBar').classList.add('show');
+    document.getElementById('processBtn').disabled=false;
+  }).catch(function(e){
+    console.error(e);showError('Failed to read PDF. Make sure it is a valid file.');
+  });
+}
+
+// FIX #3 (security): selectOpt now separated from premium guard
+// Premium guard is checked in processDoc only, not on click
+// This way the visual selection always works correctly (fixes FIX #4)
+function selectOpt(opt){
+  selOption=opt;
+  ['summarize','explain-fast','explain','both','translate','exercise'].forEach(function(o){
+    document.getElementById('opt-'+o).classList.toggle('selected',o===opt);
+  });
+  document.getElementById('wordCountRow').style.display    =(opt==='summarize'||opt==='both')?'flex':'none';
+  document.getElementById('translateRow').style.display    =(opt==='translate')?'flex':'none';
+  document.getElementById('bothExplainRow').style.display  =(opt==='both')?'flex':'none';
+  document.getElementById('exerciseModeRow').style.display =(opt==='exercise')?'flex':'none';
+}
+
+function detectLang(text){
+  var s=text.slice(0,800).toLowerCase();
+  var fr=(s.match(/\b(le|la|les|de|du|des|un|une|et|en|est|pour|que|qui|dans|avec|sur|par|au|aux|ce|cette|ces|il|elle|nous|vous|ils|elles|je|tu|mais|tout|bien|plus|aussi|comme|son|sa|ses|leur|leurs|dont|donc|ainsi|puis|jamais|toujours|très|peu|beaucoup|plusieurs|chaque|même|autre|peut|doit|fait|faire|être|avoir|été|sont|sera|était)\b/g)||[]).length;
+  return fr>=6?'fr':'en';
+}
+
+function cleanText(text){
+  return text
+    .replace(/\\\[[\s\S]+?\\\]/g,function(m){return '$$'+m.slice(2,-2)+'$$';})
+    .replace(/\\\([\s\S]+?\\\)/g,function(m){return '$'+m.slice(2,-2)+'$';})
+    .replace(/^\s*\d{1,3}\t/gm,'')
+    .replace(/^\s*\d{1,3} {2,}/gm,'')
+    .replace(/^(\s*)\d{1,3} (?=\S)/gm,'$1')
+    .replace(/\n\s*\d{1,3}\s*\n/g,'\n')
+    .replace(/ {2,}/g,' ')
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+}
+
+function smartChunk(text){
+  if(text.length<=MAX_CHARS)return text;
+  var intro =text.slice(0,Math.floor(MAX_CHARS*0.45));
+  var midPos=Math.floor(text.length/2)-Math.floor(MAX_CHARS*0.15);
+  var middle=text.slice(midPos,midPos+Math.floor(MAX_CHARS*0.30));
+  var end   =text.slice(text.length-Math.floor(MAX_CHARS*0.25));
+  return intro+'\n\n[...middle of document...]\n\n'+middle+'\n\n[...end of document...]\n\n'+end;
+}
+
+function normaliseLaTeX(text){
+  text = text
+    .replace(/\\\[[\s\S]+?\\\]/g,function(m){return '$$'+m.slice(2,-2)+'$$';})
+    .replace(/\\\([\s\S]+?\\\)/g,function(m){return '$'+m.slice(2,-2)+'$';});
+  text = text.replace(/(^|(?<=\n))([ \t]*)(\\boxed\{[\s\S]+?\}(?:\s*[,.]?\s*)?)(?=\n|$)/gm, function(match, pre, ws, latex){
+    return ws + '$$' + latex.trim() + '$$';
+  });
+  text = text.replace(/(?<!\$)(?<!\$\$)(\\boxed\{[^}]+\})(?!\$)/g, function(m){ return '$$' + m + '$$'; });
+  return text;
+}
+
+function renderMarkdown(text){
+  text = normaliseLaTeX(text);
+  text = text.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/<think>[\s\S]*$/,'').trim();
+  text = text.split('\n').filter(function(l){
+    return !/^(here(?:'s| is| are)|sure[,!]|of course|certainly|i hope|happy to|let me (?:solve|explain)|i'll (?:solve|explain)|below (?:is|are)|je vais|voici|bien s[uû]r|d'accord|absolument|n'h[eé]sitez pas)/i.test(l.trim());
+  }).join('\n').trim();
+  var closingPattern = /(let me know|feel free|if you (have|need|want)|n'hésitez pas|si vous (avez|avez besoin|souhaitez)|pour toute question|hope this helps|j'espère que|would you like|voulez-vous|puis-je vous|is there anything|y a-t-il autre|anything else|autre chose)[^\n]*$/im;
+  text = text.replace(closingPattern, '').trim();
+  text = text.replace(closingPattern, '').trim();
+
+  var maths=[];
+  function stash(m){maths.push(m);return '\x00M'+(maths.length-1)+'\x00';}
+  text = text.replace(/\$\$[\s\S]+?\$\$/g,stash);
+  text = text.replace(/(?<!\$)\$(?!\$)[^\$\n]+?\$(?!\$)/g,stash);
+
+  var lines = text.split('\n');
+  var out = ''; var inP = false;
+  function cP(){if(inP){out+='</p>';inP=false;}}
+  function oP(){if(!inP){out+='<p class="md-p">';inP=true;}}
+
+  function isTableRow(l){ return /^\s*\|/.test(l) && /\|\s*$/.test(l.trim()); }
+  function isSepRow(l){ return /^\s*\|[-| :]+\|\s*$/.test(l); }
+  function parseCells(l){ return l.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(function(c){return c.trim();}); }
+  function fmtCell(c){ return c.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>'); }
+
+  var i = 0;
+  while(i < lines.length){
+    var line = lines[i];
+    if(isTableRow(line) && i+1 < lines.length && isSepRow(lines[i+1])){
+      cP();
+      var headers = parseCells(line);
+      out += '<table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:0.88rem">';
+      out += '<thead><tr>';
+      headers.forEach(function(h){ out += '<th style="padding:8px 12px;border:1px solid rgba(255,255,255,0.12);background:rgba(124,106,255,0.15);color:var(--accent);font-family:var(--font-display);font-weight:700;text-align:left">'+fmtCell(h)+'</th>'; });
+      out += '</tr></thead><tbody>';
+      i += 2;
+      var rowAlt = false;
+      while(i < lines.length && isTableRow(lines[i])){
+        var cells = parseCells(lines[i]);
+        var bg = rowAlt ? 'rgba(255,255,255,0.02)' : 'transparent';
+        out += '<tr style="background:'+bg+'">';
+        cells.forEach(function(c){ out += '<td style="padding:7px 12px;border:1px solid rgba(255,255,255,0.07);color:var(--text);vertical-align:top">'+fmtCell(c)+'</td>'; });
+        out += '</tr>';
+        rowAlt = !rowAlt;
+        i++;
+      }
+      out += '</tbody></table>';
+      continue;
+    }
+
+    var fmt = line
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>');
+    if(/^#{4,6}\s/.test(line))  {cP();out+='<h4>'+fmt.replace(/^#{4,6}\s+/,'')+'</h4>';}
+    else if(/^#{1,3}\s/.test(line)){cP();out+='<h3>'+fmt.replace(/^#{1,3}\s+/,'')+'</h3>';}
+    else if(/^[-•]\s/.test(line)) {oP();out+='&bull;&nbsp;'+fmt.replace(/^[-•]\s+/,'')+'<br>';}
+    else if(/^\d+\.\s/.test(line)){oP();out+=fmt+'<br>';}
+    else if(fmt.trim()==='')      {cP();}
+    else                          {oP();out+=fmt+' ';}
+    i++;
+  }
+  cP();
+
+  out = out.replace(/\x00M(\d+)\x00/g,function(_,idx){return maths[parseInt(idx)];});
+  return '<div class="md-out">'+out+'</div>';
+}
+
+var KATEX_OPTS = {
+  delimiters:[
+    {left:'$$',right:'$$',display:true},
+    {left:'$',right:'$',display:false},
+    {left:'\\(',right:'\\)',display:false},
+    {left:'\\[',right:'\\]',display:true}
+  ],
+  throwOnError:false,
+  errorColor:'#ff6a88'
+};
+
+function runKatex(el){
+  if(!el)return;
+  function go(){if(window.renderMathInElement)renderMathInElement(el,KATEX_OPTS);}
+  if(window.katexReady)go();
+  else{var prev=window.pendingMathRender;window.pendingMathRender=function(){if(prev)prev();go();};}
+}
+
+function setStep(msg,sub){
+  var el=document.getElementById('loadingStep');
+  var se=document.getElementById('loadingSub');
+  if(el){el.classList.remove('step-anim');void el.offsetWidth;el.classList.add('step-anim');el.textContent=msg;}
+  if(se&&sub)se.textContent=sub;
+}
+
+function processDoc(){
+  if(!extractedText)return;
+  // FIX #1/#3: gate checked at process time, not at click time
+  if(!checkPremiumAccess(selOption)) return;
+  // FIX #7: abort any previous in-flight requests
+  activeAbortControllers.forEach(function(c){try{c.abort();}catch(e){}});
+  activeAbortControllers=[];
+
+  hideAlerts();clearResults();
+  document.getElementById('loadingSpinner').classList.add('show');
+  document.getElementById('processBtn').disabled=true;
+  setStep('Reading document…','Preparing text for AI.');
+
+  var chunk=smartChunk(cleanText(extractedText));
+  var tasks=[];
+
+  if(selOption==='summarize'||selOption==='both')
+    tasks.push(callAI(chunk,'summarize'));
+  if(selOption==='explain-fast')
+    tasks.push(callAI(chunk,'explain-fast'));
+  if(selOption==='explain'||selOption==='both'){
+    var em=(selOption==='both')?(selBothExplain==='fast'?'explain-fast':'explain'):'explain';
+    tasks.push(callAI(chunk,em));
+  }
+  if(selOption==='translate')tasks.push(callAI(chunk,'translate'));
+  if(selOption==='exercise')tasks.push(callAI(chunk,'exercise'));
+
+  var msgs=[
+    ['Sending to AI…','Mistral Large is reading your document.'],
+    ['Analyzing content…','Identifying key concepts and structure.'],
+    ['Generating response…','Writing results word by word.'],
+    ['Almost there…','Final output incoming.'],
+    ['Still working…','Long documents take a bit more time. Hang tight!']
+  ];
+  var mi=0;
+  var timer=setInterval(function(){mi=(mi+1)%msgs.length;setStep(msgs[mi][0],msgs[mi][1]);},5000);
+
+  Promise.all(tasks).then(function(){
+    clearInterval(timer);
+    setStep('Done! ✓','');
+    document.getElementById('resultsContainer').classList.add('show');
+    document.getElementById('pdfExportBar').classList.add('show');
+    showSuccess(uiLang==='fr'?'Terminé ! Vos résultats sont prêts ci-dessous.':'Done! Your results are ready below.');
+  }).catch(function(err){
+    clearInterval(timer);
+    if(err && err.name === 'AbortError') return; // user clicked clear — silent
+    showError(err.message||'An error occurred. Please try again.');
+  }).finally(function(){
+    document.getElementById('loadingSpinner').classList.remove('show');
+    document.getElementById('processBtn').disabled=false;
+  });
+}
+
+var NO_FILLER="OUTPUT RULE — MANDATORY: End your response immediately after the last piece of content. Do NOT add any closing sentence, offer, question, or call-to-action at the end. No 'Let me know if you need anything', no 'Feel free to ask', no 'I hope this helps', no 'Would you like me to...', no 'If you have any questions...'. Just stop.";
+var NO_FILLER_FR="RÈGLE DE SORTIE — OBLIGATOIRE : Termine ta réponse immédiatement après le dernier élément de contenu. N'ajoute AUCUNE phrase de clôture, offre, question ou appel à l'action à la fin.";
+var MATH_RULE_EN='MATH FORMAT RULE — MANDATORY: Every mathematical expression, formula, fraction, integral, sum, Greek letter, subscript, superscript or symbol MUST be wrapped in LaTeX delimiters. Use $...$ for inline math and $$...$$ for display/block math. NEVER write bare LaTeX outside dollar signs. CRITICAL: \\boxed{} MUST always be inside $$...$$. Examples: write "$\\frac{1}{2}$" not "\\frac{1}{2}", write "$$\\int_0^\\infty e^{-x}dx$$" not "\\int_0^\\infty e^{-x}dx".';
+var MATH_RULE_FR='RÈGLE FORMAT MATH — OBLIGATOIRE : Toute expression mathématique DOIT être entre délimiteurs LaTeX. Utilise $...$ pour les maths en ligne et $$...$$ pour les maths en bloc. CRITIQUE : \\boxed{} doit TOUJOURS être dans $$...$$.';
+
+function buildPrompt(mode,lang,wc){
+  var isFr=lang==='fr';
+  var MATH=isFr?MATH_RULE_FR:MATH_RULE_EN;
+  var NOFILLER=isFr?NO_FILLER_FR:NO_FILLER;
+  var wcEn=wc==='40-70'?'40-70 words':wc==='75-95'?'75-95 words':wc==='100-120'?'100-120 words':wc==='120-150'?'120-150 words':'150+ words';
+  var wcFr=wc==='40-70'?'40 à 70 mots':wc==='75-95'?'75 à 95 mots':wc==='100-120'?'100 à 120 mots':wc==='120-150'?'120 à 150 mots':'plus de 150 mots';
+
+  if(mode==='translate'){
+    if(selTransDir==='enfr')return{sys:"You are a professional translator. Translate the English text into natural fluent French. Ignore any line numbers. "+NOFILLER,usr:"Translate to French:\n\n"};
+    return{sys:"Tu es un traducteur professionnel. Traduis ce texte en anglais naturel et fluide. "+NOFILLER,usr:"Traduis en anglais :\n\n"};
+  }
+  if(mode==='summarize'){
+    if(isFr)return{sys:"Tu es un expert en résumé de documents. Résume le texte en français, de façon concise et fidèle. Respecte impérativement la longueur demandée. "+NOFILLER,usr:"Résume ce texte en "+wcFr+" :\n\n"};
+    return{sys:"You are an expert document summarizer. Summarize the text concisely and accurately. Respect the requested length exactly. "+NOFILLER,usr:"Summarize in "+wcEn+":\n\n"};
+  }
+  if(mode==='explain-fast'){
+    if(isFr)return{sys:"Tu es un assistant pédagogique. Donne une explication rapide et claire en 3 parties : (1) Ce que c'est. (2) Idées principales — 3 à 5 points. (3) Ce qu'il faut retenir — 1 phrase. "+NOFILLER,usr:"Explique rapidement ce document :\n\n"};
+    return{sys:"You are a helpful teaching assistant. Give a quick clear explanation in 3 parts: (1) What it is. (2) Main ideas — 3 to 5 key points. (3) Bottom line — 1 sentence. "+NOFILLER,usr:"Quickly explain this document:\n\n"};
+  }
+  if(mode==='explain'){
+    if(isFr)return{sys:"Tu es un tuteur universitaire expert en mathématiques et sciences. Détecte si le document est mathématique/scientifique ou général, puis adapte.\n\nSi MATHÉMATIQUE/SCIENTIFIQUE : **Nature du document**. **Concepts fondamentaux** : sens intuitif, définition formelle LaTeX, exemple travaillé. **Formules clés** en LaTeX. **Exemples résolus**. **Points clés**.\n\nSi GÉNÉRAL : Nature, Thèmes, Explication approfondie, Points clés.\n\n"+MATH+' '+NOFILLER,usr:"Voici le document à expliquer :\n\n"};
+    return{sys:"You are an expert university tutor in mathematics and science. Detect if the document is math/science or general.\n\nIf MATHEMATICAL/SCIENTIFIC: **Document Overview**. **Core Concepts**: intuitive meaning, formal definition with LaTeX, worked example. **Key Formulas** in LaTeX. **Worked Examples**. **Key Takeaways**.\n\nIf GENERAL: Overview, Topics, Deep dive, Takeaways.\n\n"+MATH+' '+NOFILLER,usr:"Here is the document to explain:\n\n"};
+  }
+  if(mode==='exercise'){
+    var isHint=(selExMode==='hint');
+    if(isFr)return{
+      sys:isHint?'Tu es un tuteur expert. Pour CHAQUE exercice : identifie-le, donne un INDICE ciblé. Ne résous PAS entièrement. '+MATH:'Tu es un tuteur expert. Trouve et résous CHAQUE exercice complètement. Pour chaque : (1) Énonce. (2) Méthode. (3) Toutes les étapes avec LaTeX. (4) Réponse finale avec \\boxed{}. '+MATH+' '+NOFILLER,
+      usr:(isHint?'Donne des indices :':'Résous complètement :')+'\n\n'
+    };
+    return{
+      sys:isHint?'You are an expert tutor. For EACH exercise: identify it, give a targeted HINT. Do NOT solve fully. '+MATH:'You are an expert math tutor. Find and solve EACH exercise completely. For each: (1) State it. (2) Method. (3) ALL steps with LaTeX. (4) Box final answer with \\boxed{}. '+MATH+' '+NOFILLER,
+      usr:(isHint?'Give hints:':'Solve every exercise:')+'\n\n'
+    };
+  }
+  return{sys:'You are a helpful assistant. '+NOFILLER,usr:''};
+}
+
+function callAI(text, mode){
+  var lang = detectLang(text);
+  var prompt = buildPrompt(mode, lang, selWordCount);
+  var maxTok = (mode==='explain'||mode==='exercise') ? 16000
+             : (mode==='translate') ? 12000
+             : (mode==='explain-fast') ? 3000 : 4000;
+
+  var blockId = mode==='summarize'?'summaryBlock'
+              : (mode==='explain'||mode==='explain-fast')?'explanationBlock'
+              : mode==='translate'?'translationBlock':'exerciseBlock';
+  var bodyId  = mode==='summarize'?'summaryBody'
+              : (mode==='explain'||mode==='explain-fast')?'explanationBody'
+              : mode==='translate'?'translationBody':'exerciseBody';
+  var wcId    = mode==='summarize'?'summaryWC'
+              : (mode==='explain'||mode==='explain-fast')?'explanationWC'
+              : mode==='translate'?'translationWC':'exerciseWC';
+
+  var textId    = bodyId.replace('Body','Text');
+  var pendingId = textId + 'Pending';
+
+  document.getElementById(blockId).style.display = 'block';
+  document.getElementById('resultsContainer').classList.add('show');
+
+  var bodyEl = document.getElementById(bodyId);
+  bodyEl.innerHTML = '';
+  var textEl = document.createElement('p');
+  textEl.id = textId;
+  var pendingEl = document.createElement('span');
+  pendingEl.id = pendingId;
+  pendingEl.style.whiteSpace = 'pre-wrap';
+  bodyEl.appendChild(textEl);
+  bodyEl.appendChild(pendingEl);
+
+  var fullText = '';
+  var renderedUpTo = 0;
+  var truncated = false;
+  var systemMsg = prompt.sys;
+  var userMsg   = prompt.usr + text;
+
+  // FIX #7: use AbortController so Clear can cancel in-flight requests
+  var controller = new AbortController();
+  activeAbortControllers.push(controller);
+
+  var body = JSON.stringify({
+    model: CHAT_MODEL,
+    messages: [{role:'system',content:systemMsg},{role:'user',content:userMsg}],
+    max_tokens: maxTok,
+    temperature: 0.3,
+    stream: true
+  });
+
+  function doStream(fetchPromise){
+    return fetchPromise.then(function(response){
+      if(response.status===401) throw new Error('API token rejected (401). Check your Mistral token.');
+      if(response.status===429) throw new Error('Rate limit reached — please wait a moment and retry.');
+      if(response.status===413) throw new Error('Document too large — try a shorter PDF.');
+      if(response.status===503) throw new Error('Model warming up — wait 30s and retry.');
+      if(!response.ok){
+        return response.text().then(function(b){
+          var msg='API error '+response.status;
+          try{var j=JSON.parse(b);msg+=': '+(j.message||j.error||b.slice(0,120));}catch(e){msg+=': '+b.slice(0,120);}
+          throw new Error(msg);
+        });
+      }
+
+      var reader  = response.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+
+      function pump(){
+        return reader.read().then(function(result){
+          if(result.done) return fullText.trim();
+          buf += decoder.decode(result.value, {stream:true});
+          var lines = buf.split('\n');
+          buf = lines.pop();
+
+          for(var i=0; i<lines.length; i++){
+            var line = lines[i].trim();
+            if(!line || !line.startsWith('data:')) continue;
+            var data = line.slice(5).trim();
+            if(data==='[DONE]') return fullText.trim();
+            try{
+              var parsed = JSON.parse(data);
+              if(parsed.choices && parsed.choices[0] && parsed.choices[0].finish_reason==='length')
+                truncated = true;
+              var delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta;
+              if(delta && delta.content){
+                fullText += delta.content;
+                var display = fullText
+                  .replace(/<think>[\s\S]*?<\/think>/g,'')
+                  .replace(/<think>[\s\S]*$/,'');
+
+                var tail = display.slice(renderedUpTo);
+                var lastClose = -1;
+                var re, m;
+                re = /\$\$[\s\S]+?\$\$/g;
+                while((m = re.exec(tail)) !== null) lastClose = renderedUpTo + m.index + m[0].length;
+                re = /\\\[[\s\S]+?\\\]/g;
+                while((m = re.exec(tail)) !== null){var e=renderedUpTo+m.index+m[0].length;if(e>lastClose)lastClose=e;}
+                re = /(?<!\$)\$(?!\$)[^$\n]+?\$(?!\$)/g;
+                while((m = re.exec(tail)) !== null){var e=renderedUpTo+m.index+m[0].length;if(e>lastClose)lastClose=e;}
+                re = /\\\([\s\S]+?\\\)/g;
+                while((m = re.exec(tail)) !== null){var e=renderedUpTo+m.index+m[0].length;if(e>lastClose)lastClose=e;}
+
+                if(lastClose > renderedUpTo){
+                  var toRender = display.slice(renderedUpTo, lastClose);
+                  renderedUpTo = lastClose;
+                  var span = document.createElement('span');
+                  span.innerHTML = renderMarkdown(toRender).replace(/^<div class="md-out">|<\/div>$/g,'');
+                  textEl.appendChild(span);
+                  if(window.renderMathInElement){
+                    renderMathInElement(span,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});
+                  }
+                }
+
+                var pending = display.slice(renderedUpTo)
+                  .replace(/\\\[[\s\S]+?\\\]/g,function(m2){return '$$'+m2.slice(2,-2)+'$$';})
+                  .replace(/\\\([\s\S]+?\\\)/g,function(m2){return '$'+m2.slice(2,-2)+'$';});
+                pendingEl.textContent = pending;
+                document.getElementById(wcId).textContent = display.split(/\s+/).filter(Boolean).length + ' words';
+                bodyEl.scrollTop = bodyEl.scrollHeight;
+              }
+            }catch(e){
+              if(e.message && (e.message.indexOf('API error')===0 || e.message.indexOf('Daily')===0)) throw e;
+            }
+          }
+          return pump();
+        });
+      }
+
+      function finalize(){
+        var ft = fullText.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/<think>[\s\S]*$/,'').trim();
+        pendingEl.textContent = '';
+        var ftFixed = ft.replace(/(?<![\$])(\\boxed\{(?:[^{}]|\{[^{}]*\})*\})(?![\$])/g,function(m){return '$$'+m+'$$';});
+        textEl.innerHTML = renderMarkdown(ftFixed).replace(/^<div class="md-out">|<\/div>$/g,'');
+        function applyKatex(){
+          if(window.renderMathInElement){
+            try{renderMathInElement(document.getElementById(blockId),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false,errorColor:'#ff6a88'});}
+            catch(e){console.warn('KaTeX:',e);}
+          }
+        }
+        if(window.katexReady)applyKatex();
+        else{var prev=window.pendingMathRender;window.pendingMathRender=function(){if(prev)prev();applyKatex();};}
+        document.getElementById(wcId).textContent = ft.split(/\s+/).filter(Boolean).length + ' words';
+        return ft;
+      }
+
+      function continueIfNeeded(){
+        if(!truncated) return Promise.resolve(finalize());
+        truncated = false;
+        var tail = fullText.slice(-2000);
+        var contBody = JSON.stringify({
+          model: CHAT_MODEL,
+          messages:[
+            {role:'system',content:systemMsg},
+            {role:'user',content:'You were writing a response but were cut off. Here is the last part:\n\n[...]'+tail+'\n\nContinue EXACTLY from where you stopped. Do not repeat.'}
+          ],
+          max_tokens: 8192, temperature: 0.3, stream: true
+        });
+        return doStream(fetch(CHAT_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+MISTRAL_TOKEN},body:contBody,signal:controller.signal})).then(continueIfNeeded);
+      }
+
+      return pump().then(continueIfNeeded);
+    });
+  }
+
+  return doStream(fetch(CHAT_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+MISTRAL_TOKEN},
+    body: body,
+    signal: controller.signal
+  }));
+}
+
+function copyBody(id){
+  var t=document.getElementById(id).innerText||'';
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('Copied!');});}
+  else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copied!');}
+}
+function dlBody(id,label){
+  var t=document.getElementById(id).innerText||'';
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
+  a.download='chouai-'+label+'-'+Date.now()+'.txt';a.click();
+}
+function toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+function clearAll(){
+  // FIX #7: abort any in-flight requests before clearing
+  activeAbortControllers.forEach(function(c){try{c.abort();}catch(e){}});
+  activeAbortControllers=[];
+  extractedText='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileName').style.display='none';
+  document.getElementById('statsBar').classList.remove('show');
+  document.getElementById('processBtn').disabled=true;
+  clearResults();hideAlerts();
+}
+function clearResults(){
+  document.getElementById('resultsContainer').classList.remove('show');
+  document.getElementById('pdfExportBar').classList.remove('show');
+  ['summaryBlock','explanationBlock','translationBlock','exerciseBlock'].forEach(function(id){
+    document.getElementById(id).style.display='none';
+  });
+  ['summaryBody','explanationBody','translationBody','exerciseBody'].forEach(function(id){
+    document.getElementById(id).innerHTML='';
+  });
+}
+
+function showError(m){document.getElementById('errorMsg').textContent=m;document.getElementById('errorAlert').classList.add('show');}
+function showSuccess(m){
+  document.getElementById('successMsg').textContent=m;
+  document.getElementById('successAlert').classList.add('show');
+  setTimeout(function(){document.getElementById('successAlert').classList.remove('show');},4000);
+}
+function hideAlerts(){document.getElementById('errorAlert').classList.remove('show');document.getElementById('successAlert').classList.remove('show');}
+
+var FAQS={
+  en:[
+    {q:'What file types are supported?',a:'ChouAI supports PDF files (.pdf). The PDF must contain selectable digital text — scanned or image-based PDFs cannot be processed automatically.'},
+    {q:'How long does processing take?',a:'Usually 5 to 20 seconds. Mistral Large processes with deep reasoning, results stream in real time and you can read them as they appear.'},
+    {q:'Is my data private and secure?',a:'Yes. Your PDF file never leaves your device. ChouAI uses PDF.js to extract text locally in your browser. Only the extracted text is sent to the Mistral API and is never stored.'},
+    {q:'Is this really completely free?',a:'Summarize and Quick Explain are 100% free. Premium features (Deep Explain, Both, Translate, Exercise Solver) require a $5/month subscription.'},
+    {q:'Can I use ChouAI on my phone?',a:'Absolutely. ChouAI is fully responsive and works on all modern smartphones and tablets.'},
+    {q:'How do I get Premium?',a:'Click any premium feature or the upgrade button, complete your PayPal payment, then contact Chouaib. Premium is activated manually within 24h.'},
+    {q:'Why does the result only cover part of my document?',a:'ChouAI sends up to 32,000 characters — roughly 20 pages. Very long documents are sampled intelligently across beginning, middle, and end.'},
+    {q:'Can I use this for academic or research documents?',a:'Definitely. ChouAI works great for academic papers, research articles, reports, and legal documents.'},
+    {q:"What's coming next for ChouAI?",a:'Chat with your document, custom prompts, and more languages are planned. The project is actively developed by Chouaib.'},
+    {q:'How do I host this on GitHub Pages?',a:'Create a GitHub repository, upload the HTML file, go to Settings → Pages, select your main branch, and your site will be live.'}
+  ],
+  fr:[
+    {q:'Quels types de fichiers sont supportés ?',a:'ChouAI supporte les fichiers PDF (.pdf). Le PDF doit contenir du texte numérique sélectionnable.'},
+    {q:'Combien de temps prend le traitement ?',a:'Généralement 5 à 20 secondes. Les résultats apparaissent en temps réel.'},
+    {q:'Mes données sont-elles privées ?',a:'Oui. Votre fichier PDF ne quitte jamais votre appareil. Seul le texte extrait est envoyé à l\'API Mistral et n\'est jamais stocké.'},
+    {q:'Est-ce vraiment entièrement gratuit ?',a:'Résumer et Explication rapide sont 100% gratuits. Les fonctionnalités Premium (Explication complète, Les deux, Traduction, Exercices) nécessitent un abonnement à 5$/mois.'},
+    {q:'Puis-je utiliser ChouAI sur mon téléphone ?',a:'Absolument. ChouAI est entièrement responsive.'},
+    {q:'Comment obtenir Premium ?',a:'Cliquez sur une fonctionnalité premium, effectuez votre paiement PayPal, puis contactez Chouaib. Le Premium est activé manuellement sous 24h.'},
+    {q:'Pourquoi le résultat ne couvre-t-il qu\'une partie de mon document ?',a:'ChouAI envoie jusqu\'à 32 000 caractères. Les documents très longs sont échantillonnés entre début, milieu et fin.'},
+    {q:'Puis-je l\'utiliser pour des documents académiques ?',a:'Absolument. ChouAI fonctionne très bien pour les articles académiques et rapports.'},
+    {q:'Quelles sont les prochaines fonctionnalités ?',a:'La conversation avec le document et plus de langues sont prévues.'},
+    {q:'Comment héberger sur GitHub Pages ?',a:'Créez un dépôt GitHub, importez le fichier HTML, allez dans Paramètres → Pages, sélectionnez votre branche principale.'}
+  ]
+};
+
+var faqAttached=false;
+function buildFAQ(){
+  var list=document.getElementById('faqList');
+  if(!list)return;
+  list.innerHTML='';
+  var faqs=FAQS[uiLang]||FAQS.en;
+  faqs.forEach(function(f,i){
+    var item=document.createElement('div');item.className='faq-item';
+    item.innerHTML='<div class="faq-q" data-i="'+i+'"><span>'+f.q+'</span><span class="faq-chevron">&#8964;</span></div><div class="faq-a" id="fa-'+i+'">'+f.a+'</div>';
+    list.appendChild(item);
+  });
+  if(!faqAttached){
+    faqAttached=true;
+    list.addEventListener('click',function(e){
+      var q=e.target.closest('.faq-q');if(!q)return;
+      var idx=parseInt(q.getAttribute('data-i'),10);
+      var items=list.querySelectorAll('.faq-item');
+      var isOpen=items[idx].classList.contains('open');
+      items.forEach(function(el,j){el.classList.remove('open');var fa=document.getElementById('fa-'+j);if(fa)fa.classList.remove('open');});
+      if(!isOpen){items[idx].classList.add('open');var fa=document.getElementById('fa-'+idx);if(fa)fa.classList.add('open');}
+    });
+  }
+}
+
+var T={
+  en:{
+    heroBadge:'✨ AI-Powered Document Intelligence',
+    heroTitle:'Your PDFs,<br><span class="gradient">Decoded by ChouAI</span>',
+    heroSub:'Upload any PDF and let AI extract the intelligence. Summaries, deep explanations, translations — in seconds.',
+    heroStart:'✶ Start Using Free',heroHow:'Learn How It Works →',
+    seeItLabel:'See It In Action',seeItTitle:'From Dense Text to Clear Insight',
+    seeItSub:'ChouAI reads your document and distills it into what actually matters.',
+    exSumTitle:'Example: Article Summarization',exExpTitle:'Example: Math Concept Explanation',
+    exTransTitle:'Example: Document Translation',exTransBadge:'Translate Mode',
+    exTransOrigLabel:'Original — English',exTransResLabel:'ChouAI Translation — French',
+    exTransMeta:'EN → FR · Fluent · Structure preserved',
+    feat1Title:'Instant Processing',feat1Desc:"Powered by Mistral Large — Mistral's frontier reasoning model, purpose-built for math, science and French.",
+    feat2Title:'Private by Design',feat2Desc:'Your files never touch our servers. Everything runs in your browser. Zero storage, zero tracking.',
+    feat3Title:'100% Free',feat3Desc:"Powered by Mistral's free API. Just upload your PDF and click process — no setup needed.",
+    uploadLabel:'Start Here',uploadTitle:'Process Your PDF',
+    uploadSub:'Drag and drop or click to upload — completely free, forever.',
+    pdfLoading:'Loading PDF engine…',dropTitle:'Drop your PDF here',dropSub:'or click to browse your files',
+    statPages:'Pages:',statWords:'Words:',statChars:'Chars sent:',
+    optSumLbl:'Summarize',optSumDesc:'Concise overview',
+    optExpFastLbl:'Quick Explain',optExpFastDesc:'Fast, key ideas',optExpFastBadge:'Faster · Less detail',
+    optExpLbl:'Deep Explain',optExpDesc:'Full structured dive',optExpDeepBadge:'Detailed · Takes longer',
+    optBothLbl:'Both',optBothDesc:'Summary + explain',
+    optTransLbl:'Translate',optTransDesc:'EN ↔ FR',
+    optExLbl:'Solve Exercises',optExDesc:'Find & solve problems',optExBadge:'Hint or Full Solution',
+    bothExplainLabel:'📚 Explanation depth:',bothFast:'⚡ Quick',bothDeep:'🎓 Deep',
+    wcLabel:'📝 Summary Length:',wcNote:'Applied to Summarize mode only',
+    transLabel:'🌍 Translate:',transEnFr:'🇬🇧 English → 🇫🇷 French',transFrEn:'🇫🇷 French → 🇬🇧 English',
+    exModeLabel:'🧩 Solution mode:',exHint:'💡 Hint only',exSolve:'✏️ Full solution',
+    processBtn:'✶ Process PDF',clearBtn:'↺ Clear',
+    resSumTitle:'Summary',resExpTitle:'Explanation',resTransTitle:'Translation',resExTitle:'Exercise Solver',
+    copyBtn:'📋 Copy',dlBtn:'⬇ Download',footerRight:'Free · Private · Mistral AI',
+    howLabel:'The Process',howTitle:'How ChouAI Works',howSub:'Three simple steps from document to insight.',
+    step1Title:'Upload Your PDF',step1Desc:'Drag and drop or click to select any PDF. ChouAI uses PDF.js to read it entirely in your browser — nothing is ever uploaded to a server.',
+    step2Title:'Choose Your Output',step2Desc:'Select Summarize, Quick/Deep Explain, Translate, Solve Exercises, or Both. For summaries, choose your preferred word count range.',
+    step3Title:'Get Your Results',step3Desc:'Your text is sent to Mistral Large via the Mistral API. Results stream word-by-word in real time with full LaTeX math rendering.',
+    faqSub:'Everything you need to know about ChouAI.',
+    aboutHeroTitle:'Built with ❤ by Chouaib',
+    aboutHeroSub:'ChouAI was created with a single belief: powerful AI tools should be accessible to everyone — no setup, no credit card, no limits.',
+    aboutCard1Title:'🎯 Our Mission',aboutCard1Desc:'To make AI-powered document understanding effortlessly accessible. Whether student, researcher, or professional — ChouAI puts AI in your hands, free.',
+    aboutCard2Title:'🔒 Privacy First',aboutCard2Desc:'No file ever leaves your device — only the extracted text is sent to the AI API and it is never stored.',
+    aboutCard3Title:'⚡ Why Free?',aboutCard3Desc:"ChouAI uses Mistral's free inference API and is hosted on GitHub Pages at zero cost.",
+    aboutCard4Title:"🚀 What's Next?",aboutCard4Desc:'Chat with your document, custom prompts, and bulk processing are all on the roadmap.',
+    contactTitle:'📬 Get In Touch',contactDesc:"Have feedback, ideas, or questions? We'd love to hear from you."
+  },
+  fr:{
+    heroBadge:'✨ Intelligence documentaire par IA',
+    heroTitle:'Vos PDFs,<br><span class="gradient">Décodés par ChouAI</span>',
+    heroSub:"Importez un PDF et laissez l'IA extraire l'essentiel. Résumés, explications, traductions — en quelques secondes.",
+    heroStart:'✶ Commencer gratuitement',heroHow:'Voir comment ça marche →',
+    seeItLabel:'Voir en action',seeItTitle:"Du texte dense à l'essentiel",
+    seeItSub:'ChouAI lit votre document et en extrait ce qui compte vraiment.',
+    exSumTitle:"Exemple : Résumé d'article",exExpTitle:"Exemple : Explication mathématique",
+    exTransTitle:'Exemple : Traduction de document',exTransBadge:'Mode Traduction',
+    exTransOrigLabel:'Original — Anglais',exTransResLabel:'Traduction ChouAI — Français',
+    exTransMeta:'EN → FR · Fluide · Structure préservée',
+    feat1Title:'Traitement instantané',feat1Desc:'Propulsé par Mistral Large — conçu pour les maths, sciences et le français.',
+    feat2Title:'Privé par conception',feat2Desc:"Vos fichiers ne touchent jamais nos serveurs. Tout s'exécute dans votre navigateur.",
+    feat3Title:'100% Gratuit',feat3Desc:"Propulsé par l'API gratuite de Mistral. Importez votre PDF et cliquez.",
+    uploadLabel:'Commencer ici',uploadTitle:'Traiter votre PDF',
+    uploadSub:'Glissez-déposez ou cliquez — entièrement gratuit, pour toujours.',
+    pdfLoading:'Chargement du moteur PDF…',dropTitle:'Déposez votre PDF ici',dropSub:'ou cliquez pour parcourir vos fichiers',
+    statPages:'Pages :',statWords:'Mots :',statChars:'Caractères envoyés :',
+    optSumLbl:'Résumer',optSumDesc:'Aperçu concis',
+    optExpFastLbl:'Explication rapide',optExpFastDesc:'Rapide, idées clés',optExpFastBadge:'Rapide · Moins détaillé',
+    optExpLbl:'Explication complète',optExpDesc:'Analyse structurée complète',optExpDeepBadge:'Détaillé · Plus long',
+    optBothLbl:'Les deux',optBothDesc:'Résumé + explication',
+    optTransLbl:'Traduire',optTransDesc:'EN ↔ FR',
+    optExLbl:'Résoudre exercices',optExDesc:'Trouver & résoudre',optExBadge:'Indice ou solution complète',
+    bothExplainLabel:"📚 Profondeur d'explication :",bothFast:'⚡ Rapide',bothDeep:'🎓 Complet',
+    wcLabel:'📝 Longueur du résumé :',wcNote:'Appliqué au mode Résumer uniquement',
+    transLabel:'🌍 Traduire :',transEnFr:'🇬🇧 Anglais → 🇫🇷 Français',transFrEn:'🇫🇷 Français → 🇬🇧 Anglais',
+    exModeLabel:'🧩 Mode solution :',exHint:'💡 Indice seulement',exSolve:'✏️ Solution complète',
+    processBtn:'✶ Traiter le PDF',clearBtn:'↺ Effacer',
+    resSumTitle:'Résumé',resExpTitle:'Explication',resTransTitle:'Traduction',resExTitle:"Solveur d'exercices",
+    copyBtn:'📋 Copier',dlBtn:'⬇ Télécharger',footerRight:'Gratuit · Privé · Mistral IA',
+    howLabel:'Le Processus',howTitle:'Comment fonctionne ChouAI',howSub:"Trois étapes simples du document à l'analyse.",
+    step1Title:'Importez votre PDF',step1Desc:"Glissez-déposez ou cliquez. ChouAI utilise PDF.js — rien n'est jamais envoyé à un serveur.",
+    step2Title:'Choisissez votre sortie',step2Desc:"Sélectionnez Résumer, Expliquer, Traduire, Résoudre exercices, ou Les deux.",
+    step3Title:'Obtenez vos résultats',step3Desc:"Votre texte est envoyé à Mistral Large. Les résultats apparaissent mot par mot en temps réel.",
+    faqSub:'Tout ce que vous devez savoir sur ChouAI.',
+    aboutHeroTitle:'Construit avec ❤ par Chouaib',
+    aboutHeroSub:"ChouAI a été créé avec une conviction : les outils IA puissants doivent être accessibles à tous.",
+    aboutCard1Title:'🎯 Notre Mission',aboutCard1Desc:"Rendre la compréhension de documents par IA accessible sans effort.",
+    aboutCard2Title:'🔒 Vie privée avant tout',aboutCard2Desc:"Aucun fichier ne quitte votre appareil.",
+    aboutCard3Title:'⚡ Pourquoi gratuit ?',aboutCard3Desc:"ChouAI utilise l'API gratuite de Mistral.",
+    aboutCard4Title:'🚀 La suite ?',aboutCard4Desc:"Conversation avec le document et plus de langues sont prévues.",
+    contactTitle:'📬 Contactez-nous',contactDesc:"Vous avez des retours ou des idées ? Nous serions ravis de vous lire."
+  }
+};
+
+function t(k){return (T[uiLang]&&T[uiLang][k])||T.en[k]||k;}
+
+function applyLang(){
+  var l=uiLang;
+  document.getElementById('navHome').textContent=l==='fr'?'🏠 Accueil':'🏠 Home';
+  document.getElementById('navHow').textContent=l==='fr'?'⚙ Comment ça marche':'⚙ How It Works';
+  document.getElementById('navFaq').textContent='❓ FAQ';
+  document.getElementById('navAbout').textContent=l==='fr'?'💚 À propos':'💚 About Us';
+  document.getElementById('heroBadgeEl').textContent=t('heroBadge');
+  document.getElementById('heroTitleEl').innerHTML=t('heroTitle');
+  document.getElementById('heroSubEl').textContent=t('heroSub');
+  document.getElementById('heroStartBtn').textContent=t('heroStart');
+  document.getElementById('heroHowBtn').textContent=t('heroHow');
+  document.getElementById('seeItLabelEl').textContent=t('seeItLabel');
+  document.getElementById('seeItTitleEl').textContent=t('seeItTitle');
+  document.getElementById('seeItSubEl').textContent=t('seeItSub');
+  document.getElementById('exSumTitleEl').textContent=t('exSumTitle');
+  document.getElementById('exExpTitleEl').textContent=t('exExpTitle');
+  document.getElementById('ex-translate-title').textContent=t('exTransTitle');
+  document.getElementById('ex-translate-badge').textContent=t('exTransBadge');
+  document.getElementById('ex-translate-orig-label').textContent=t('exTransOrigLabel');
+  document.getElementById('ex-translate-result-label').textContent=t('exTransResLabel');
+  document.getElementById('ex-translate-meta').textContent=t('exTransMeta');
+  document.getElementById('feat1Title').textContent=t('feat1Title');document.getElementById('feat1Desc').textContent=t('feat1Desc');
+  document.getElementById('feat2Title').textContent=t('feat2Title');document.getElementById('feat2Desc').textContent=t('feat2Desc');
+  document.getElementById('feat3Title').textContent=t('feat3Title');document.getElementById('feat3Desc').textContent=t('feat3Desc');
+  document.getElementById('uploadLabelEl').textContent=t('uploadLabel');
+  document.getElementById('uploadTitleEl').textContent=t('uploadTitle');
+  document.getElementById('uploadSubEl').textContent=t('uploadSub');
+  document.getElementById('pdfjsBannerText').textContent=t('pdfLoading');
+  document.getElementById('dropTitleEl').textContent=t('dropTitle');
+  document.getElementById('dropSubEl').textContent=t('dropSub');
+  document.getElementById('statPagesLbl').textContent=t('statPages');
+  document.getElementById('statWordsLbl').textContent=t('statWords');
+  document.getElementById('statCharsLbl').textContent=t('statChars');
+  document.getElementById('optSumLbl').textContent=t('optSumLbl');document.getElementById('optSumDesc').textContent=t('optSumDesc');
+  document.getElementById('optExpFastLbl').textContent=t('optExpFastLbl');document.getElementById('optExpFastDesc').textContent=t('optExpFastDesc');document.getElementById('optExpFastBadge').textContent=t('optExpFastBadge');
+  document.getElementById('optExpLbl').textContent=t('optExpLbl');document.getElementById('optExpDesc').textContent=t('optExpDesc');document.getElementById('optExpDeepBadge').textContent=t('optExpDeepBadge');
+  document.getElementById('optBothLbl').textContent=t('optBothLbl');document.getElementById('optBothDesc').textContent=t('optBothDesc');
+  document.getElementById('optTransLbl').textContent=t('optTransLbl');document.getElementById('optTransDesc').textContent=t('optTransDesc');
+  document.getElementById('optExLbl').textContent=t('optExLbl');document.getElementById('optExDesc').textContent=t('optExDesc');document.getElementById('optExBadge').textContent=t('optExBadge');
+  document.getElementById('bothExplainLabel').textContent=t('bothExplainLabel');
+  document.getElementById('both-fast').textContent=t('bothFast');document.getElementById('both-deep').textContent=t('bothDeep');
+  document.getElementById('wcLabelEl').textContent=t('wcLabel');document.getElementById('wcNoteEl').textContent=t('wcNote');
+  document.getElementById('transLabelEl').textContent=t('transLabel');
+  document.getElementById('trans-enfr').textContent=t('transEnFr');document.getElementById('trans-fren').textContent=t('transFrEn');
+  document.getElementById('exerciseModeLabel').textContent=t('exModeLabel');
+  document.getElementById('ex-hint').textContent=t('exHint');document.getElementById('ex-solve').textContent=t('exSolve');
+  document.getElementById('processBtn').textContent=t('processBtn');document.getElementById('clearBtn').textContent=t('clearBtn');
+  document.getElementById('resSumTitleTxt').textContent=t('resSumTitle');
+  document.getElementById('resExpTitleTxt').textContent=t('resExpTitle');
+  document.getElementById('resTransTitleTxt').textContent=t('resTransTitle');
+  document.getElementById('resExTitleTxt').textContent=t('resExTitle');
+  document.querySelectorAll('.result-btn').forEach(function(btn){
+    if(btn.id&&btn.id.startsWith('copy'))btn.textContent=t('copyBtn');
+    if(btn.id&&btn.id.startsWith('dl'))btn.textContent=t('dlBtn');
+  });
+  document.getElementById('footerRightEl').textContent=t('footerRight');
+  document.getElementById('howLabelEl').textContent=t('howLabel');
+  document.getElementById('howTitleEl').textContent=t('howTitle');
+  document.getElementById('howSubEl').textContent=t('howSub');
+  document.getElementById('step1Title').textContent=t('step1Title');document.getElementById('step1Desc').textContent=t('step1Desc');
+  document.getElementById('step2Title').textContent=t('step2Title');document.getElementById('step2Desc').textContent=t('step2Desc');
+  document.getElementById('step3Title').textContent=t('step3Title');document.getElementById('step3Desc').textContent=t('step3Desc');
+  document.getElementById('faqSubEl').textContent=t('faqSub');
+  document.getElementById('aboutHeroTitle').innerHTML=t('aboutHeroTitle');
+  document.getElementById('aboutHeroSub').textContent=t('aboutHeroSub');
+  document.getElementById('aboutCard1Title').textContent=t('aboutCard1Title');document.getElementById('aboutCard1Desc').textContent=t('aboutCard1Desc');
+  document.getElementById('aboutCard2Title').textContent=t('aboutCard2Title');document.getElementById('aboutCard2Desc').textContent=t('aboutCard2Desc');
+  document.getElementById('aboutCard3Title').textContent=t('aboutCard3Title');document.getElementById('aboutCard3Desc').textContent=t('aboutCard3Desc');
+  document.getElementById('aboutCard4Title').textContent=t('aboutCard4Title');document.getElementById('aboutCard4Desc').textContent=t('aboutCard4Desc');
+  document.getElementById('contactTitle').textContent=t('contactTitle');document.getElementById('contactDesc').textContent=t('contactDesc');
+  document.getElementById('lang-en').classList.toggle('active',l==='en');
+  document.getElementById('lang-fr').classList.toggle('active',l==='fr');
+  buildFAQ();
+}
+
+function switchLang(lang){
+  uiLang=lang;
+  try{localStorage.setItem('chouai-lang',lang);}catch(e){}
+  applyLang();
+}
+
+function exportPDF(){
+  var sections=[];
+  [{id:'summaryBlock',bodyId:'summaryBody',title:'Summary'},{id:'explanationBlock',bodyId:'explanationBody',title:'Explanation'},{id:'translationBlock',bodyId:'translationBody',title:'Translation'},{id:'exerciseBlock',bodyId:'exerciseBody',title:'Exercise Solution'}].forEach(function(b){
+    var block=document.getElementById(b.id);
+    if(block&&block.style.display!=='none'){
+      var html=document.getElementById(b.bodyId).innerHTML;
+      sections.push('<div class="section"><h2>'+b.title+'</h2><div class="body">'+html+'</div></div>');
+    }
+  });
+  if(!sections.length){alert('No results to export yet.');return;}
+  var win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ChouAI Export</title>'
+    +'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif;max-width:800px;margin:0 auto;padding:20px 40px;color:#111;line-height:1.8}.header{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:2px solid #7c6aff;margin-bottom:28px}.logo-text{font-family:Arial,sans-serif;font-size:1.5rem;font-weight:800}.logo-text span{color:#7c6aff}.date{margin-left:auto;font-size:0.78rem;color:#888}h2{font-size:1rem;font-family:Arial,sans-serif;color:#7c6aff;margin-top:28px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}.body{font-size:0.95rem;color:#222;line-height:1.9}.section{margin-bottom:36px}h3{font-size:1rem;font-family:Arial,sans-serif;color:#333;margin:20px 0 4px;font-weight:700}h4{font-size:0.95rem;color:#555;margin:14px 0 4px;font-style:italic}strong{color:#111}p,.md-p{margin-bottom:8px}@page{margin:1.8cm;size:A4}@media print{body{padding:0}}</style>'
+    +'</head><body><div class="header"><svg width="36" height="36" viewBox="0 0 44 44" fill="none"><defs><linearGradient id="bg" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/></linearGradient></defs><path d="M22 6C15.5 6 10 11.5 10 18c0 2.8 0.9 5.3 2.4 7.3C11.5 26.6 11 28.2 11 30c0 3.9 3.1 7 7 7h4h4c3.9 0 7-3.1 7-7c0-1.8-0.5-3.4-1.4-4.7C33.1 23.3 34 20.8 34 18C34 11.5 28.5 6 22 6z" fill="url(#bg)" opacity="0.93"/><path d="M25 9 L18 22 H23.5 L19 37 L31 20 H25 Z" fill="#ffc107" stroke="#e6a800" stroke-width="0.6"/></svg>'
+    +'<div class="logo-text"><span>Chou</span>AI — Results</div><div class="date">'+new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})+'</div></div>'
+    +sections.join('')+'</body></html>');
+  win.document.close();
+  win.onload=function(){
+    var s1=win.document.createElement('script');s1.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
+    s1.onload=function(){
+      var s2=win.document.createElement('script');s2.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js';
+      s2.onload=function(){
+        if(win.renderMathInElement)win.renderMathInElement(win.document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+        setTimeout(function(){win.print();},300);
+      };
+      win.document.head.appendChild(s2);
+    };
+    win.document.head.appendChild(s1);
+  };
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  tryPdfjsCDN(0);
+
+  // Nav
+  document.getElementById('navLogo').addEventListener('click',function(){showPage('home');});
+  document.getElementById('menuBtn').addEventListener('click',function(e){e.stopPropagation();toggleMenu();});
+  document.getElementById('navHome').addEventListener('click',function(){showPage('home');});
+  document.getElementById('navHow').addEventListener('click',function(){showPage('howitworks');});
+  document.getElementById('navFaq').addEventListener('click',function(){showPage('faq');});
+  document.getElementById('navAbout').addEventListener('click',function(){showPage('about');});
+  document.addEventListener('click',function(e){if(!e.target.closest('nav'))closeMenu();});
+
+  // Hero
+  document.getElementById('heroStartBtn').addEventListener('click',goUpload);
+  document.getElementById('heroPremiumBtn').addEventListener('click',function(){
+    if(!currentUser){ openAuthModal(); return; }
+    openPremiumModal();
+  });
+  document.getElementById('heroHowBtn').addEventListener('click',function(){showPage('howitworks');});
+  document.getElementById('tryItNowBtn').addEventListener('click',goUpload);
+  document.getElementById('startFromFaqBtn').addEventListener('click',goUpload);
+
+  // Auth
+  document.getElementById('btnLogin').addEventListener('click',function(){openAuthModal();});
+  document.getElementById('btnSignup').addEventListener('click',function(){openAuthModal();});
+  document.getElementById('authClose').addEventListener('click',function(){closeAuthModal();});
+  document.getElementById('authOverlayBg').addEventListener('click',function(){closeAuthModal();});
+  document.getElementById('btnGoogleSignIn').addEventListener('click', function(){ signInWithGoogle(); });
+  document.getElementById('premiumClose').addEventListener('click',function(){closePremiumModal();});
+  document.getElementById('premiumOverlayBg').addEventListener('click',function(){closePremiumModal();});
+  document.getElementById('userPill').addEventListener('click',function(e){e.stopPropagation();toggleUserDropdown();});
+  document.getElementById('logoutBtn').addEventListener('click',function(){signOut();});
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#userPill')&&!e.target.closest('#userDropdown'))closeUserDropdown();
+  });
+
+  // Upload
+  var area=document.getElementById('uploadArea');
+  area.addEventListener('click',function(){document.getElementById('fileInput').click();});
+  area.addEventListener('dragover',function(e){e.preventDefault();area.classList.add('drag-over');});
+  area.addEventListener('dragleave',function(){area.classList.remove('drag-over');});
+  area.addEventListener('drop',function(e){
+    e.preventDefault();area.classList.remove('drag-over');
+    var f=e.dataTransfer&&e.dataTransfer.files[0];
+    if(f&&f.type==='application/pdf')onFileChosen(f);
+    else showError('Please drop a valid PDF file.');
+  });
+  document.getElementById('fileInput').addEventListener('change',function(e){onFileChosen(e.target.files[0]);});
+
+  // Free options select freely. Premium options show gate on click — if gate passes, select.
+  ['summarize','explain-fast'].forEach(function(o){
+    document.getElementById('opt-'+o).addEventListener('click',function(){selectOpt(o);});
+  });
+  ['explain','both','translate','exercise'].forEach(function(o){
+    document.getElementById('opt-'+o).addEventListener('click',function(){
+      if(!currentUser){ openAuthModal(); return; }
+      if(!isPremium){ openPremiumModal(); return; }
+      selectOpt(o);
+    });
+  });
+
+  // Both explain depth
+  document.getElementById('both-fast').addEventListener('click',function(){
+    selBothExplain='fast';
+    document.getElementById('both-fast').classList.add('selected');
+    document.getElementById('both-deep').classList.remove('selected');
+  });
+  document.getElementById('both-deep').addEventListener('click',function(){
+    selBothExplain='deep';
+    document.getElementById('both-deep').classList.add('selected');
+    document.getElementById('both-fast').classList.remove('selected');
+  });
+
+  // Translation direction
+  document.getElementById('trans-enfr').addEventListener('click',function(){
+    selTransDir='enfr';
+    document.getElementById('trans-enfr').classList.add('selected');
+    document.getElementById('trans-fren').classList.remove('selected');
+  });
+  document.getElementById('trans-fren').addEventListener('click',function(){
+    selTransDir='fren';
+    document.getElementById('trans-fren').classList.add('selected');
+    document.getElementById('trans-enfr').classList.remove('selected');
+  });
+
+  // Exercise mode
+  document.getElementById('ex-hint').addEventListener('click',function(){
+    selExMode='hint';
+    document.getElementById('ex-hint').classList.add('selected');
+    document.getElementById('ex-solve').classList.remove('selected');
+  });
+  document.getElementById('ex-solve').addEventListener('click',function(){
+    selExMode='solve';
+    document.getElementById('ex-solve').classList.add('selected');
+    document.getElementById('ex-hint').classList.remove('selected');
+  });
+
+  // Word count
+  document.getElementById('wordCountSelect').addEventListener('change',function(){selWordCount=this.value;});
+
+  // Process / Clear
+  document.getElementById('processBtn').addEventListener('click',processDoc);
+  document.getElementById('clearBtn').addEventListener('click',clearAll);
+
+  // Copy / Download
+  document.getElementById('copySummaryBtn').addEventListener('click',function(){copyBody('summaryBody');});
+  document.getElementById('dlSummaryBtn').addEventListener('click',function(){dlBody('summaryBody','summary');});
+  document.getElementById('copyExplainBtn').addEventListener('click',function(){copyBody('explanationBody');});
+  document.getElementById('dlExplainBtn').addEventListener('click',function(){dlBody('explanationBody','explanation');});
+  document.getElementById('copyTransBtn').addEventListener('click',function(){copyBody('translationBody');});
+  document.getElementById('dlTransBtn').addEventListener('click',function(){dlBody('translationBody','translation');});
+  document.getElementById('copyExerciseBtn').addEventListener('click',function(){copyBody('exerciseBody');});
+  document.getElementById('dlExerciseBtn').addEventListener('click',function(){dlBody('exerciseBody','exercise');});
+
+  // PDF export
+  document.getElementById('pdfExportBtn').addEventListener('click',exportPDF);
+
+  // Email
+  var ep=['elfigha','chouaib','@','gmail','.com'];
+  var ea=ep.join('');
+  var el=document.getElementById('contactEmailLink');
+  var et=document.getElementById('contactEmailText');
+  if(el)el.href='mailto:'+ea;
+  if(et)et.textContent=ea;
+
+  // Language
+  document.getElementById('lang-en').addEventListener('click',function(){switchLang('en');});
+  document.getElementById('lang-fr').addEventListener('click',function(){switchLang('fr');});
+  try{var sl=localStorage.getItem('chouai-lang');if(sl==='fr'){uiLang='fr';}}catch(e){}
+  applyLang();
+});
+
+}());
+</script>
+</body>
+</html>
